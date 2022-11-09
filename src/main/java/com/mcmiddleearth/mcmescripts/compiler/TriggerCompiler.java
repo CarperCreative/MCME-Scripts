@@ -16,6 +16,7 @@ import com.mcmiddleearth.mcmescripts.trigger.player.PlayerJoinTrigger;
 import com.mcmiddleearth.mcmescripts.trigger.player.PlayerQuitTrigger;
 import com.mcmiddleearth.mcmescripts.trigger.player.PlayerTalkTrigger;
 import com.mcmiddleearth.mcmescripts.trigger.player.VirtualPlayerAttackTrigger;
+import com.mcmiddleearth.mcmescripts.trigger.player.VirtualPlayerInteractTrigger;
 import com.mcmiddleearth.mcmescripts.trigger.timed.*;
 import com.mcmiddleearth.mcmescripts.trigger.virtual.AnimationChangeTrigger;
 import com.mcmiddleearth.mcmescripts.trigger.virtual.GoalFinishedTrigger;
@@ -59,6 +60,7 @@ public class TriggerCompiler {
                                 VALUE_PLAYER_JOIN_TRIGGER           = "player_join",
                                 VALUE_PLAYER_QUIT_TRIGGER           = "player_quit",
                                 VALUE_PLAYER_VIRTUAL_ATTACK_TRIGGER = "player_virtual_attack",
+                                VALUE_PLAYER_VIRTUAL_INTERACT_TRIGGER   = "player_virtual_interact",
                                 VALUE_VIRTUAL_TALK_TRIGGER              = "virtual_talk",
                                 VALUE_VIRTUAL_STOP_TALK_TRIGGER         = "virtual_stop_talk",
                                 VALUE_GOAL_FINISHED_TRIGGER             = "goal_finished",
@@ -146,6 +148,9 @@ public class TriggerCompiler {
                 break;
             case VALUE_PLAYER_VIRTUAL_ATTACK_TRIGGER:
                 trigger = new VirtualPlayerAttackTrigger(null);
+                break;
+            case VALUE_PLAYER_VIRTUAL_INTERACT_TRIGGER:
+                trigger = new VirtualPlayerInteractTrigger(null);
                 break;
             case VALUE_GOAL_FINISHED_TRIGGER:
                 trigger = new GoalFinishedTrigger(null);
