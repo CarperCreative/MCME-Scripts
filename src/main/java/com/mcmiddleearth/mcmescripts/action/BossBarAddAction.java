@@ -1,20 +1,16 @@
 package com.mcmiddleearth.mcmescripts.action;
 
-import com.mcmiddleearth.mcmescripts.debug.DebugManager;
-import com.mcmiddleearth.mcmescripts.debug.Modules;
-import com.mcmiddleearth.mcmescripts.selector.Selector;
+import com.mcmiddleearth.mcmescripts.action.targeted.PlayerTargetedAction;
+import com.mcmiddleearth.mcmescripts.event.target.PlayerEventTarget;
 import org.bukkit.boss.BarFlag;
 import org.bukkit.boss.BossBar;
-import org.bukkit.entity.Player;
 
-public class BossBarAddAction extends SelectingAction<Player> {
+public class BossBarAddAction extends PlayerTargetedAction {
 
-    public BossBarAddAction(Selector<Player> selector, BossBar bossBar) {
+    public BossBarAddAction(PlayerEventTarget selector, BossBar bossBar) {
         super(selector, (player, context) -> {
-            //DebugManager.verbose(Modules.Action.execute(BossBarAddAction.class),"Adding: "+player.getName() +" to Boss bar.");
             bossBar.addPlayer(player);
         });
-        //DebugManager.info(Modules.Action.create(this.getClass()),"Selector: "+selector.getSelector());
         getDescriptor().indent().addLine("Title: "+bossBar.getTitle())
                 .addLine("Color: "+bossBar.getColor().name())
                 .addLine("Style: "+bossBar.getStyle().name())

@@ -1,37 +1,59 @@
 package com.mcmiddleearth.mcmescripts.action;
 
-import com.mcmiddleearth.mcmescripts.debug.DebugManager;
-import com.mcmiddleearth.mcmescripts.debug.Modules;
-import com.mcmiddleearth.mcmescripts.selector.Selector;
+import com.craftmend.thirdparty.iosocket.global.Global;
+import com.mcmiddleearth.entities.entities.RealPlayer;
+import com.mcmiddleearth.mcmescripts.action.targeted.EntityTargetedAction;
+import com.mcmiddleearth.mcmescripts.event.position.EventPosition;
+import com.mcmiddleearth.mcmescripts.event.rotation.EventRotation;
+import com.mcmiddleearth.mcmescripts.event.rotation.Rotation;
+import com.mcmiddleearth.mcmescripts.event.target.EntityEventTarget;
 import org.bukkit.Location;
 import org.bukkit.block.BlockFace;
-import org.bukkit.entity.Player;
+import org.bukkit.util.Vector;
 
 import java.util.Random;
+import java.util.logging.Logger;
 
-public class TeleportAction extends SelectingAction<Player> {
+public class TeleportAction extends EntityTargetedAction {
 
     private static final Random random = new Random();
 
-    public TeleportAction(Location location, double spread, Selector<Player> selector) {
-        super(selector, (player,context) -> {
-            Location loc = location;
-            if(loc==null) {
-                loc = context.getLocation();
-                if(loc==null) return;
+    public TeleportAction(EntityEventTarget target, EventPosition eventPosition, EventRotation eventRotation, double spread) {
+        super(target, (entity,context) -> {
+
+            Vector position = eventPosition.getPosition(context);
+            Rotation rotation = eventRotation.getRotation(context);
+
+            Location loc = null;
+
+            if(position != null) loc = new Location(context.getWorld(), position.getX(), position.getY(), position.getZ());
+            if(rotation != null && loc != null) {
+                loc.setPitch(rotation.getPitch());
+                loc.setYaw(rotation.getYaw());
             }
+            if(loc==null) return;
+
             if(spread == 0) {
-                player.teleport(loc);
+                if(entity instanceof RealPlayer){
+                    entity.teleport(loc);
+                } else {
+                    Logger.getGlobal().warning(loc.toString());
+                    entity.setLocation(loc);
+                }
             } else {
                 Location randomLoc = randomClose(loc, spread);
-                player.teleport(randomLoc);
+                if(entity instanceof RealPlayer){
+                    entity.teleport(randomLoc);
+                } else {
+                    entity.setRotation(0,0,0); // Reset location in case the entity has roll from winged flight (Probably rethink this)
+                    entity.setLocation(randomLoc);
+                }
                 context.getDescriptor().addLine("Target location: "+randomLoc);
             }
-            //DebugManager.verbose(Modules.Action.execute(TeleportAction.class),"Teleport player: "+player.getName());
         });
-        //DebugManager.info(Modules.Action.create(this.getClass()),"Selector: "+selector.getSelector());
         getDescriptor().indent()
-                .addLine("Target location: "+location)
+                .addLine("Target position: "+eventPosition)
+                .addLine("Target rotation: "+eventRotation)
                 .addLine("Spread: "+spread).outdent();
     }
 

@@ -17,7 +17,6 @@ public class FireworkAction extends Action {
     public FireworkAction(Location location, FireworkMeta fireworkMeta) {
         this.fireworkMeta = fireworkMeta;
         this.location = location;
-        //DebugManager.info(Modules.Action.create(this.getClass()),"Location: "+ location);
         getDescriptor().indent()
                 .addLine("Location: "+location)
                 .addLine("Power: "+fireworkMeta.getPower())
@@ -39,12 +38,7 @@ public class FireworkAction extends Action {
     @Override
     protected void handler(TriggerContext context) {
         Location loc = location;
-        if(loc == null) {
-            loc = context.getLocation();
-            context.getDescriptor().addLine("New location: "+loc);
-        }
         if (loc != null) {
-            //DebugManager.verbose(Modules.Action.execute(this.getClass()),"Location: "+loc);
             loc.getWorld().spawn(loc, Firework.class, firework -> {
                 firework.setFireworkMeta(fireworkMeta);
             });

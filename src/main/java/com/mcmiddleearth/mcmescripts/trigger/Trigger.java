@@ -4,9 +4,12 @@ package com.mcmiddleearth.mcmescripts.trigger;
 import com.mcmiddleearth.mcmescripts.debug.DebugManager;
 import com.mcmiddleearth.mcmescripts.debug.Descriptor;
 import com.mcmiddleearth.mcmescripts.debug.Modules;
-import com.mcmiddleearth.mcmescripts.selector.PlayerSelector;
-import com.mcmiddleearth.mcmescripts.selector.VirtualEntitySelector;
+import com.mcmiddleearth.mcmescripts.selector.Selector;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.World;
+
+import java.util.logging.Logger;
 
 public abstract class Trigger {
 
@@ -16,12 +19,15 @@ public abstract class Trigger {
 
     private boolean callOnce = false;
 
-    private VirtualEntitySelector entity;
-    private PlayerSelector player;
-    private Location location;
+    private Selector entity;
+    private Selector player;
+
+    private World world;
 
     public void register(ITriggerContainer triggerContainer) {
         triggerContainer.addTrigger(this);
+
+        Logger.getGlobal().info("Registered trigger: " + getName() + " with trigger container " + triggerContainer.getName());
         this.triggerContainer = triggerContainer;
         //DebugManager.info(Modules.Trigger.register(this.getClass()),
         //        "Scrip: "+script.getName()+" Call once: "+callOnce);
@@ -37,28 +43,28 @@ public abstract class Trigger {
         return triggerContainer;
     }
 
-    public VirtualEntitySelector getEntity() {
+    public Selector getEntity() {
         return entity;
     }
 
-    public void setEntity(VirtualEntitySelector entity) {
+    public void setEntity(Selector entity) {
         this.entity = entity;
     }
 
-    public PlayerSelector getPlayer() {
+    public Selector getPlayer() {
         return player;
     }
 
-    public void setPlayer(PlayerSelector player) {
+    public void setPlayer(Selector player) {
         this.player = player;
     }
 
-    public Location getLocation() {
-        return location;
+    public void setWorld(String worldName) {
+        this.world = Bukkit.getWorld(worldName);
     }
 
-    public void setLocation(Location location) {
-        this.location = location;
+    public World getWorld(){
+        return world;
     }
 
     public void setTriggerContainer(ITriggerContainer triggerContainer) {
@@ -91,10 +97,10 @@ public abstract class Trigger {
 
     public Descriptor getDescriptor() {
         return new Descriptor(this.getClass().getSimpleName() + ": "+name).indent()
-                .addLine("Call once: "+callOnce)
-                .addLine("Trigger entity: "+(entity!=null?entity.getSelector():"--none--"))//+" at "+entity.getLocation().toString():"--none--"))
+                .addLine("Call once: "+callOnce);
+                /*.addLine("Trigger entity: "+(entity!=null?entity.getSelector():"--none--"))//+" at "+entity.getLocation().toString():"--none--"))
                 .addLine("Trigger player: "+(entity!=null?player.getSelector():"--none--"))//+" at "+player.getLocation().toString():"--none--"))
-                .addLine("Trigger location: "+(location!=null?location:"--none--")).outdent();
+                .addLine("Trigger location: "+(location!=null?location:"--none--")).outdent();*/
     }
 
     /*public String print(String indent) {

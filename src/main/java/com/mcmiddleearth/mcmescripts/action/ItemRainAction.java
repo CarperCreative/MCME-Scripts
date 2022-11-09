@@ -1,8 +1,8 @@
 package com.mcmiddleearth.mcmescripts.action;
 
-import com.mcmiddleearth.entities.entities.McmeEntity;
 import com.mcmiddleearth.mcmescripts.MCMEScripts;
-import com.mcmiddleearth.mcmescripts.selector.Selector;
+import com.mcmiddleearth.mcmescripts.action.targeted.EntityTargetedAction;
+import com.mcmiddleearth.mcmescripts.event.target.EntityEventTarget;
 import org.bukkit.Location;
 import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemStack;
@@ -13,12 +13,12 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
-public class ItemRainAction extends SelectingAction<McmeEntity> {
+public class ItemRainAction extends EntityTargetedAction {
 
     private static final Random random = new Random();
 
-    public ItemRainAction(Selector<McmeEntity> selector, Set<ItemStack> items, int size, int drop_height, double probability, int duration) {
-        super(selector, ((entity, context) -> {
+    public ItemRainAction(EntityEventTarget target, Set<ItemStack> items, int size, int drop_height, double probability, int duration) {
+        super(target, ((entity, context) -> {
             List<Item> spawnedItems = new ArrayList<>();
             List<ItemStack> itemList = new ArrayList<>(items);
             int stop = duration * 2;

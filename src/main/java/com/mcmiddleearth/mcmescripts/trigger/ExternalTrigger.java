@@ -55,8 +55,8 @@ public class ExternalTrigger extends DecisionTreeTrigger {
                             DebugManager.warn(Modules.Trigger.call(this.getClass()),"Entity not found.");
                         }
                         break;
-                    case "location":
-                        LocationCompiler.compile(new JsonPrimitive(value)).ifPresent(context::withLocation);
+/*                    case "location":
+                        LocationCompiler.compile(new JsonPrimitive(value)).ifPresent(context::withLocation);*/
                     case "name":
                         context.withName(value);
                         break;

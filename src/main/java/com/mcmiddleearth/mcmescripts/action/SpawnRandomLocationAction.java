@@ -14,7 +14,6 @@ public class SpawnRandomLocationAction extends Action {
     private final SpawnRandomSelectionAction.RandomSpawnData data;
 
     public SpawnRandomLocationAction(Location center, SpawnRandomSelectionAction.RandomSpawnData data, int lifespan) {
-        //DebugManager.info(Modules.Action.create(this.getClass()),"Location: "+center);
         this.data = data;
         this.center = center;
         this.lifespan = lifespan;
@@ -26,7 +25,6 @@ public class SpawnRandomLocationAction extends Action {
 
     @Override
     protected void handler(TriggerContext context) {
-        //DebugManager.verbose(Modules.Action.execute(this.getClass()),"Location: "+center);
         data.spawn(context, center, lifespan);
     }
 }

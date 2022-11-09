@@ -1,25 +1,22 @@
-package com.mcmiddleearth.mcmescripts.condition;
+package com.mcmiddleearth.mcmescripts.condition.targeted;
 
 import com.mcmiddleearth.entities.entities.McmeEntity;
-import com.mcmiddleearth.mcmescripts.debug.DebugManager;
+import com.mcmiddleearth.mcmescripts.condition.Condition;
 import com.mcmiddleearth.mcmescripts.debug.Descriptor;
-import com.mcmiddleearth.mcmescripts.debug.Modules;
-import com.mcmiddleearth.mcmescripts.selector.McmeEntitySelector;
 import com.mcmiddleearth.mcmescripts.selector.Selector;
 import com.mcmiddleearth.mcmescripts.trigger.TriggerContext;
-import org.bukkit.entity.Player;
 
 import java.util.function.Function;
 
-public class SelectingCondition<T> extends Condition {
+public class EntityTargetedCondition extends Condition {
 
     private boolean matchAllSelected = false;
 
-    private final Selector<T> selector;
+    private final Selector selector;
 
-    private final Function<T,Boolean> test;
+    private final Function<McmeEntity,Boolean> test;
 
-    public SelectingCondition(Selector<T> selector, Function<T, Boolean> test) {
+    public EntityTargetedCondition(Selector selector, Function<McmeEntity, Boolean> test) {
         this.test = test;
         this.selector = selector;
     }
@@ -28,12 +25,9 @@ public class SelectingCondition<T> extends Condition {
     public boolean test(TriggerContext context) {
         boolean result = matchAllSelected;
         context.getDescriptor().add(super.getDescriptor()).indent();
-        for(T element :selector.select(context)) {
-            if(element instanceof Player) {
-                context.getDescriptor().addLine("Testing player: "+((Player)element).getName());
-            } else if(element instanceof McmeEntity) {
-                context.getDescriptor().addLine("Testing McmeEntity: "+(((McmeEntity) element).getName()));
-            }
+        for(McmeEntity element : selector.selectAll(context)) {
+            context.getDescriptor().addLine("Testing McmeEntity: "+(element.getName()));
+
             if(matchAllSelected && !test.apply(element)) {
                 result = false;
                 break;
@@ -43,8 +37,6 @@ public class SelectingCondition<T> extends Condition {
             }
         }
         context.getDescriptor().addLine("Test result: "+result).outdent();
-        //DebugManager.verbose(Modules.Condition.test(this.getClass()),
-        //        "Selector: "+selector.getSelector()+" Result: "+result);
         return result;
     }
 

@@ -1,25 +1,20 @@
 package com.mcmiddleearth.mcmescripts.condition;
 
 import com.mcmiddleearth.entities.ai.goal.GoalType;
-import com.mcmiddleearth.entities.entities.VirtualEntity;
-import com.mcmiddleearth.mcmescripts.debug.DebugManager;
+import com.mcmiddleearth.mcmescripts.condition.targeted.VirtualEntityTargetedCondition;
 import com.mcmiddleearth.mcmescripts.debug.Descriptor;
-import com.mcmiddleearth.mcmescripts.debug.Modules;
-import com.mcmiddleearth.mcmescripts.selector.EntitySelector;
-import com.mcmiddleearth.mcmescripts.trigger.TriggerContext;
+import com.mcmiddleearth.mcmescripts.event.target.VirtualEntityEventTarget;
 
-public class GoalTypeCondition extends SelectingCondition<VirtualEntity> {
+public class GoalTypeCondition extends VirtualEntityTargetedCondition {
 
     private final GoalType goalType;
     private final boolean exclude;
 
-    public GoalTypeCondition(EntitySelector<VirtualEntity> selector, GoalType goalType, boolean exclude) {
-        super(selector, entity -> (entity.getGoal() != null ? entity.getGoal().getType().equals(goalType) != exclude :
+    public GoalTypeCondition(VirtualEntityEventTarget target, GoalType goalType, boolean exclude) {
+        super(target, entity -> (entity.getGoal() != null ? entity.getGoal().getType().equals(goalType) != exclude :
                                                               (goalType == null) != exclude));
         this.goalType = goalType;
         this.exclude = exclude;
-        //DebugManager.info(Modules.Condition.create(this.getClass()),
-        //        "Selector: "+selector.getSelector()+" Test goalType: "+goalType.name()+" exclude: "+exclude);
     }
 
     public Descriptor getDescriptor() {

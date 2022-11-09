@@ -96,7 +96,7 @@ public class Quest {
 
     public void checkStages() {
         //check if stages needs loading or unloading
-//Logger.getGlobal().info("Check stages of: "+name + " number of stages: "+stages.size());
+        //Logger.getGlobal().info("Check stages of: "+name + " number of stages: "+stages.size());
         stages.values().forEach(stage -> {
             if(stage.isTriggered() && !stage.isActive()) {
                 stage.load();

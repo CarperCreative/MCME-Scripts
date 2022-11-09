@@ -26,8 +26,6 @@ import com.mcmiddleearth.command.McmeCommandSender;
 import com.mcmiddleearth.entities.EntitiesPlugin;
 import com.mcmiddleearth.mcmescripts.ConfigKeys;
 import com.mcmiddleearth.mcmescripts.MCMEScripts;
-import com.mcmiddleearth.mcmescripts.debug.DebugManager;
-import com.mcmiddleearth.mcmescripts.debug.Modules;
 import com.mcmiddleearth.mcmescripts.script.ScriptManager;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -90,7 +88,7 @@ public class DriveUtil {
                 .fromStream(new FileInputStream(new java.io.File(MCMEScripts.getInstance().getDataFolder(),
                         "key.json")))
                 .createScoped(SCOPES);
-                //.createDelegated("user@example.com");
+        //.createDelegated("user@example.com");
     }
 
     private static Credential getTokenCredential() throws IOException {
@@ -115,7 +113,7 @@ public class DriveUtil {
     }
 
     public static void refreshToken() {
-        URL url;
+        URL url = null;
         try {
             url = new URL("https://oauth2.googleapis.com/token");
             URLConnection con = url.openConnection();
@@ -140,8 +138,8 @@ public class DriveUtil {
                 os.write(out);
                 os.flush();
             }
-            //JsonParser parser = new JsonParser();
-            JsonElement response = JsonParser.parseReader(new JsonReader(new InputStreamReader(http.getInputStream())));
+            JsonParser parser = new JsonParser();
+            JsonElement response = parser.parse(new JsonReader(new InputStreamReader(http.getInputStream())));
             JsonElement tokenJson = response.getAsJsonObject().get("access_token");
             if(tokenJson instanceof JsonPrimitive) {
                 String token = tokenJson.getAsString();
@@ -152,7 +150,7 @@ public class DriveUtil {
         }
     }
 
-    public static void readFiles() {
+    public static void readFiles() throws IOException, GeneralSecurityException {
         // Build a new authorized API client service.
         new BukkitRunnable() {
             public void run() {
@@ -200,7 +198,6 @@ public class DriveUtil {
         java.io.File localFile = getLocalFile(parent, filename);
         if(parentId == null || localFile == null) {
             sender.sendMessage(new ComponentBuilder().append("Export Failed.").color(ChatColor.RED).create());
-            DebugManager.info(Modules.Command.execute(DriveUtil.class),"Export failed: parent or file not found.");
             return;
         }
         // Build a new authorized API client service.
@@ -209,16 +206,13 @@ public class DriveUtil {
                 try {
                     export();
                     sender.sendMessage(new ComponentBuilder().append("Export done.").color(ChatColor.GREEN).create());
-                    DebugManager.info(Modules.Command.execute(DriveUtil.class),"Exported: "+parent+"/"+filename);
                 } catch (GeneralSecurityException | IOException e) {
                     refreshToken();
                     try {
                         export();
                         sender.sendMessage(new ComponentBuilder().append("Export done.").color(ChatColor.GREEN).create());
-                        DebugManager.info(Modules.Command.execute(DriveUtil.class),"Exported: "+parent+"/"+filename);
                     } catch (GeneralSecurityException | IOException ex) {
                         sender.sendMessage(new ComponentBuilder().append("Export Failed.").color(ChatColor.RED).create());
-                        DebugManager.info(Modules.Command.execute(DriveUtil.class),"Export failed: access denied.");
                         ex.printStackTrace();
                     }
                 }
@@ -226,33 +220,33 @@ public class DriveUtil {
 
             private void export() throws GeneralSecurityException, IOException {
                 final NetHttpTransport HTTP_TRANSPORT;
-                    HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
-                    Drive service = new Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY,
+                HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
+                Drive service = new Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY,
 //                                        getCredentials(HTTP_TRANSPORT)
-                            getTokenCredential()
+                        getTokenCredential()
 //                                     getServiceCredentials()
 /*                                    getServiceCredentialImpersonate(HTTP_TRANSPORT, JSON_FACTORY,
                                             "118347752578020467440",SCOPES,
                                             new java.io.File(MCMEScripts.getInstance().getDataFolder(),"key.p12"),
                                             "mcmiddleearth.com@gmail.com"
                                             )*/
-                    )
-                            .setApplicationName(APPLICATION_NAME)
-                            .build();
+                )
+                        .setApplicationName(APPLICATION_NAME)
+                        .build();
 
-                    File fileMetadata = new File();
-                    if(filename.equals("debug.txt")) fileMetadata.setName(filename);
-                    else fileMetadata.setName(filename+".json");
-                    fileMetadata.setParents(Collections.singletonList(parentId)); //animations
-                    //java.io.File filePath = new java.io.File(MCMEScripts.getInstance().getDataFolder(),filename+".json");
-                    if(!localFile.exists()) {
-                        localFile.createNewFile();
-                    }
-                    FileContent mediaContent = new FileContent("text/plain", localFile);
-                    File file = service.files().create(fileMetadata, mediaContent)
-                            .setFields("id")
-                            .execute();
-                    System.out.println("File ID: " + file.getId());
+                File fileMetadata = new File();
+                if(filename.equals("debug.txt")) fileMetadata.setName(filename);
+                else fileMetadata.setName(filename+".json");
+                fileMetadata.setParents(Collections.singletonList(parentId)); //animations
+                //java.io.File filePath = new java.io.File(MCMEScripts.getInstance().getDataFolder(),filename+".json");
+                if(!localFile.exists()) {
+                    localFile.createNewFile();
+                }
+                FileContent mediaContent = new FileContent("text/plain", localFile);
+                File file = service.files().create(fileMetadata, mediaContent)
+                        .setFields("id")
+                        .execute();
+                System.out.println("File ID: " + file.getId());
 
                 /*try {
                     DriveUtil.readFiles();
@@ -268,7 +262,6 @@ public class DriveUtil {
         java.io.File localFile = getLocalFile(parent, filename);
         if(parentId == null || localFile == null) {
             sender.sendMessage(new ComponentBuilder().append("Import Failed.").color(ChatColor.RED).create());
-            DebugManager.info(Modules.Command.execute(DriveUtil.class),"Import failed: parent or file not found.");
             return;
         }
         // Build a new authorized API client service.
@@ -277,16 +270,13 @@ public class DriveUtil {
                 try {
                     importer();
                     sender.sendMessage(new ComponentBuilder().append("Import done.").color(ChatColor.GREEN).create());
-                    DebugManager.info(Modules.Command.execute(DriveUtil.class),"Imported: "+parent+"/"+filename);
                 } catch (GeneralSecurityException | IOException e) {
                     refreshToken();
                     try {
                         importer();
                         sender.sendMessage(new ComponentBuilder().append("Import done.").color(ChatColor.GREEN).create());
-                        DebugManager.info(Modules.Command.execute(DriveUtil.class),"Imported: "+parent+"/"+filename);
                     } catch (GeneralSecurityException | IOException ex) {
                         sender.sendMessage(new ComponentBuilder().append("Import Failed.").color(ChatColor.RED).create());
-                        DebugManager.info(Modules.Command.execute(DriveUtil.class),"Import failed: access denied.");
                         ex.printStackTrace();
                     }
                 }
@@ -294,28 +284,28 @@ public class DriveUtil {
 
             private void importer() throws GeneralSecurityException, IOException {
                 final NetHttpTransport HTTP_TRANSPORT;
-                    HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
-                    Drive service = new Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY,
-                            getTokenCredential()
-                    )
-                            .setApplicationName(APPLICATION_NAME)
-                            .build();
+                HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
+                Drive service = new Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY,
+                        getTokenCredential()
+                )
+                        .setApplicationName(APPLICATION_NAME)
+                        .build();
 
-                    List<String> files = getFileIds(service, parentId, filename);
+                List<String> files = getFileIds(service, parentId, filename);
 
-                    for(String fileId: files) {
-                        try (OutputStream outputStream = new FileOutputStream(localFile)) {
-                            service.files().get(fileId)
-                                    .executeMediaAndDownloadTo(outputStream);
-                        }
+                for(String fileId: files) {
+                    try (OutputStream outputStream = new FileOutputStream(localFile)) {
+                        service.files().get(fileId)
+                                .executeMediaAndDownloadTo(outputStream);
                     }
+                }
 
             }
         }.runTaskAsynchronously(MCMEScripts.getInstance());
 
     }
 
-    private static List<String> getFileIds(Drive service, String parent, String filename) throws IOException {
+    private static List<String> getFileIds(Drive service, String parent, String filename) throws IOException, GeneralSecurityException {
         FileList result = service.files().list()
                 .setQ("'"+parent+"'"+" in parents and name = '"+filename+".json'")
                 .setPageSize(1000)
@@ -327,12 +317,15 @@ public class DriveUtil {
     }
 
     private static String getParentId(String parent) {
-        switch (parent) {
-            case "animations": return MCMEScripts.getConfigString(ConfigKeys.DRIVE_FOLDER_ANIMATIONS, "");
-            case "entities": return MCMEScripts.getConfigString(ConfigKeys.DRIVE_FOLDER_ENTITIES, "");
-            case "scripts": return MCMEScripts.getConfigString(ConfigKeys.DRIVE_FOLDER_SCRIPTS, "");
-            default: return null;
+        switch(parent) {
+            case "animations":
+                return MCMEScripts.getConfigString(ConfigKeys.DRIVE_FOLDER_ANIMATIONS,"");
+            case "entities":
+                return MCMEScripts.getConfigString(ConfigKeys.DRIVE_FOLDER_ENTITIES,"");
+            case "scripts":
+                return MCMEScripts.getConfigString(ConfigKeys.DRIVE_FOLDER_SCRIPTS,"");
         }
+        return null;
     }
 
     private static java.io.File getLocalFile(String parent, String filename) {

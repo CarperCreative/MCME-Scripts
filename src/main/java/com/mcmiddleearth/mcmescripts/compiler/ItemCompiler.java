@@ -31,9 +31,6 @@ public class ItemCompiler {
         KEY_ATTRIBUTE       = "attribute",
         KEY_ATTRIBUTE_MOD   = "attribute_modifier",
         KEY_ATTRIBUTE_MODS  = "attribute_modifiers",
-        KEY_AMOUNT          = "amount",
-        KEY_OPERATION       = "operation",
-        KEY_SLOT            = "slot",
         KEY_ENCHANTMENT     = "enchantment",
         KEY_ENCHANTMENTS    = "enchantments",
         KEY_LEVEL           = "level",
@@ -149,36 +146,13 @@ public class ItemCompiler {
 
     private static void addAttributeModifiers(ItemMeta meta, JsonElement modJson) {
         if(modJson instanceof JsonArray) {
-            modJson.getAsJsonArray().forEach(element -> addAttributeModifier(meta, element));
+            modJson.getAsJsonArray().forEach(element ->{
+                AttributeModifier modifier = AttributeModifierCompiler.compile(element);
+                meta.addAttributeModifier(AttributeModifierCompiler.getAttribute(element),modifier);
+            });
         } else if(modJson instanceof JsonObject) {
-            addAttributeModifier(meta, modJson);
-        }
-    }
-
-    private static void addAttributeModifier(ItemMeta meta, JsonElement modJson) {
-        try {
-            JsonObject jsonObject = modJson.getAsJsonObject();
-            int amount = PrimitiveCompiler.compileInteger(jsonObject.get(KEY_AMOUNT),1);
-            EquipmentSlot slot = null;
-            if(jsonObject.get(KEY_SLOT) != null) {
-                slot = EquipmentSlot.valueOf(jsonObject.get(KEY_SLOT).getAsString().toUpperCase());
-            }
-            AttributeModifier.Operation operation = AttributeModifier.Operation.valueOf(jsonObject.get(KEY_OPERATION).getAsString().toUpperCase());
-            Attribute attribute = Attribute.valueOf(jsonObject.get(KEY_ATTRIBUTE).getAsString().toUpperCase());
-            String name = jsonObject.get(KEY_NAME).getAsString();
-            UUID uuid = UUID.randomUUID();
-            AttributeModifier mod;
-            if(slot!=null) {
-                mod = new AttributeModifier(uuid, name, amount, operation, slot);
-            } else {
-                mod = new AttributeModifier(uuid, name, amount, operation);
-            }
-//Logger.getGlobal().info("Modfiers: "+(meta.getAttributeModifiers()!=null?meta.getAttributeModifiers().size():"null"));
-            meta.addAttributeModifier(attribute,mod);
-//Logger.getGlobal().info("add mod: "+name+" "+amount+" "+attribute.name());
-//Logger.getGlobal().info("Modfiers: "+(meta.getAttributeModifiers()!=null?meta.getAttributeModifiers().size():"null"));
-        } catch(IllegalStateException | ClassCastException | NullPointerException | IllegalArgumentException ex) {
-            DebugManager.warn(Modules.Item.create(ItemCompiler.class), "Can't compile attribute modifier: "+ex.getMessage());
+            AttributeModifier modifier = AttributeModifierCompiler.compile(modJson);
+            meta.addAttributeModifier(AttributeModifierCompiler.getAttribute(modJson),modifier);
         }
     }
 

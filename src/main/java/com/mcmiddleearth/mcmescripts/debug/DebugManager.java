@@ -199,17 +199,13 @@ public class DebugManager {
     }
 
     public static void log(String message, String scriptName, Level level) {
-        ChatColor color = ChatColor.GRAY;
-        switch (level) {
-            case INFO:
-                color = ChatColor.WHITE; break;
-            case WARNING:
-                color = ChatColor.YELLOW; break;
-            case SEVERE:
-                color = ChatColor.RED; break;
-            case CRITICAL:
-                color = ChatColor.DARK_RED;
-        }
+        ChatColor color = switch (level) {
+            case INFO -> ChatColor.WHITE;
+            case WARNING -> ChatColor.YELLOW;
+            case SEVERE -> ChatColor.RED;
+            case CRITICAL -> ChatColor.DARK_RED;
+            default -> ChatColor.GRAY;
+        };
         if(fileDebugScript.filter(scriptName)) {
             writer.println(message);
         }

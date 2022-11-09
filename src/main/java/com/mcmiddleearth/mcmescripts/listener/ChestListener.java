@@ -1,12 +1,11 @@
 package com.mcmiddleearth.mcmescripts.listener;
 
-import com.google.api.client.json.JsonString;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.mcmiddleearth.mcmescripts.MCMEScripts;
 import com.mcmiddleearth.mcmescripts.compiler.LocationCompiler;
 import com.mcmiddleearth.mcmescripts.compiler.LootTableCompiler;
-import com.mcmiddleearth.mcmescripts.looting.ItemChoice;
+import com.mcmiddleearth.mcmescripts.looting.LootTableChoice;
 import com.mcmiddleearth.mcmescripts.looting.LootTable;
 import com.mcmiddleearth.mcmescripts.utils.JsonUtils;
 import org.bukkit.Location;
@@ -26,7 +25,7 @@ public class ChestListener implements Listener {
 
     private static final Set<Location> openedChests = new HashSet<>();
 
-    private final LootTable lootTable;
+    private final LootTable<ItemStack> lootTable;
 
 
     private static final File openedChestFile = new File(MCMEScripts.getInstance().getDataFolder(),"openedChests.json");
@@ -57,7 +56,7 @@ public class ChestListener implements Listener {
     }
 
     private ItemStack[] getLoot() {
-        return lootTable.selectItems().toArray(new ItemStack[0]);
+        return lootTable.select().toArray(new ItemStack[0]);
     }
 
     private static void saveOpenedChests() {
@@ -83,8 +82,8 @@ public class ChestListener implements Listener {
         }
     }
 
-    private LootTable loadLootTable() {
-        Set<ItemChoice> choices = null;
+    private LootTable<ItemStack> loadLootTable() {
+        Set<LootTableChoice<ItemStack>> choices = null;
         try {
             if(lootTableFile.exists()) {
                 JsonObject jsonObject = JsonUtils.loadJsonData(lootTableFile);
@@ -95,6 +94,6 @@ public class ChestListener implements Listener {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return new LootTable(choices);
+        return new LootTable<>(choices);
     }
 }

@@ -2,16 +2,21 @@ package com.mcmiddleearth.mcmescripts.trigger;
 
 import com.mcmiddleearth.entities.ai.goal.Goal;
 import com.mcmiddleearth.entities.entities.McmeEntity;
+import com.mcmiddleearth.entities.entities.VirtualEntity;
 import com.mcmiddleearth.entities.events.events.McmeEntityEvent;
 import com.mcmiddleearth.mcmescripts.IEntityContainer;
+import com.mcmiddleearth.mcmescripts.ITagContainer;
 import com.mcmiddleearth.mcmescripts.debug.Descriptor;
+import com.mcmiddleearth.mcmescripts.event.rotation.Rotation;
 import com.mcmiddleearth.mcmescripts.quest.party.Party;
 import com.mcmiddleearth.mcmescripts.quest.Stage;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
+import org.bukkit.util.Vector;
 
-import java.util.HashMap;
-import java.util.Map;
+import javax.swing.text.Position;
+import java.util.*;
 
 public class TriggerContext {
 
@@ -26,31 +31,30 @@ public class TriggerContext {
 
     private McmeEntity entity;
 
-    private Location location;
-
     private Goal goal;
 
     private McmeEntityEvent entityEvent;
 
     private Descriptor descriptor;
 
-    private final Map<String,Object> contextMap = new HashMap<>();
+    private World world;
+
+    private final Map<String, Vector> positionContextMap = new HashMap<>();
+    private final Map<String, Rotation> rotationContextMap = new HashMap<>();
+    private final Map<String,List<Player>> playerTargetContextMap = new HashMap<>();
+    private final Map<String,List<VirtualEntity>> virtualEntityTargetContextMap = new HashMap<>();
 
     public TriggerContext(Trigger trigger) {
         this.trigger = trigger;
 
-
-
-
         if(trigger.getTriggerContainer() instanceof Stage) {
             party = ((Stage) trigger.getTriggerContainer()).getQuest().getParty();
         }
-        this.location = trigger.getLocation();
-        this.player = (trigger.getPlayer()!=null?trigger.getPlayer().selectPlayer(this).stream().findFirst().orElse(null):null);
-        this.entity = (trigger.getEntity()!=null?trigger.getEntity().select(this).stream().findFirst().orElse(null):null);
+        this.world = trigger.getWorld();
+        this.player = (trigger.getPlayer()!=null?trigger.getPlayer().selectOnlyPlayers(this).stream().findFirst().orElse(null):null);
+        this.entity = (trigger.getEntity()!=null?trigger.getEntity().selectOnlyVirtualEntities(this).stream().findFirst().orElse(null):null);
         descriptor = new Descriptor("Event Log:").indent()
-                .addLine(trigger.getClass().getSimpleName()+": "+trigger.getTriggerContainer().getName()+"."+trigger.getName())
-                .addLine("Event location: "+(location!=null?location:"--none--"))
+                .addLine(trigger.getTriggerContainer().getName()+"."+trigger.getName())
                 .addLine("Event player: "+(player!=null?player.getName():"--none--"))
                 .addLine("Event entity: "+(entity!=null?entity.getName():"--none--"));
     }
@@ -63,10 +67,10 @@ public class TriggerContext {
         this.firstJoin = context.firstJoin;
         this.entity = context.entity;
         this.goal = context.goal;
-        this.location = context.location;
         this.entityEvent = context.entityEvent;
         this.name = context.name;
         this.descriptor = context.descriptor;
+        this.world = context.world;
     }
 
     public Trigger getTrigger() {
@@ -78,7 +82,15 @@ public class TriggerContext {
     }
 
     public IEntityContainer getEntityContainer() {
-        return trigger.getTriggerContainer().getEntityContainer();
+        return getTriggerContainer().getEntityContainer();
+    }
+
+    public ITagContainer getTagContainer() {
+        return getTriggerContainer().getBossBattle();
+    }
+
+    public World getWorld(){
+        return world;
     }
 
     public Player getPlayer() {
@@ -109,12 +121,33 @@ public class TriggerContext {
     }
 
 
-    public TriggerContext withContext(String key, Object message) {
-        this.contextMap.put(key,message);
-        getDescriptor().addLine("key: " + key + ", Message: " + message);
+    public TriggerContext withContext(String key, Vector position) {
+        positionContextMap.put(key,position);
+        getDescriptor().addLine("Added position context. key: " + key + ", position: " + position);
         return this;
     }
 
+    public TriggerContext withContext(String key, Rotation rotation) {
+        rotationContextMap.put(key,rotation);
+        getDescriptor().addLine("Added rotation context. key: " + key + ", Rotation: " + rotation);
+        return this;
+    }
+
+    public TriggerContext withContext(String key, Player player) {
+        List<Player> playersWithKey = playerTargetContextMap.getOrDefault(key,new ArrayList<>());
+        playersWithKey.add(player);
+        playerTargetContextMap.put(key,playersWithKey);
+        getDescriptor().addLine("Added Player context. key: " + key + ", Player: " + player);
+        return this;
+    }
+
+    public TriggerContext withContext(String key, VirtualEntity virtualEntity) {
+        List<VirtualEntity> virtualEntitiesWithKey = virtualEntityTargetContextMap.getOrDefault(key,new ArrayList<>());
+        virtualEntitiesWithKey.add(virtualEntity);
+        virtualEntityTargetContextMap.put(key,virtualEntitiesWithKey);
+        getDescriptor().addLine("Added Virtual Entity context. key: " + key + ", Virtual Entity: " + virtualEntity);
+        return this;
+    }
     public TriggerContext withMessage(String message) {
         this.message = message;
         getDescriptor().addLine("Message: "+message);
@@ -161,29 +194,18 @@ public class TriggerContext {
         return this;
     }
 
-    public Location getLocation() {
-        /*if(location!=null) {
-            return location;
-        } else if(trigger.getLocation()!=null) {
-            return trigger.getLocation();
-        } else if(trigger.getPlayer()!=null) {
-            return trigger.getPlayer().getLocation();
-        } else if(trigger.getEntity()!=null) {
-            return trigger.getEntity().getLocation();
-        } else if(player!=null) {
-            return player.getLocation();
-        } else if(entity!=null) {
-            return entity.getLocation();
-        } else {
-            return null;
-        }*/
-        return location;
+    public List<Player> getPlayerContext(String key){
+        return playerTargetContextMap.get(key);
+    }
+    public List<VirtualEntity> getVirtualEntityContext(String key){
+        return virtualEntityTargetContextMap.get(key);
+    }
+    public Vector getPositionContext(String key){
+        return positionContextMap.get(key);
     }
 
-    public TriggerContext withLocation(Location location) {
-        this.location = location;
-        getDescriptor().addLine("Override event location: "+location);
-        return this;
+    public Rotation getRotationContext(String key){
+        return rotationContextMap.get(key);
     }
 
     public Goal getGoal() {

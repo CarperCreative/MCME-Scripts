@@ -1,24 +1,41 @@
 package com.mcmiddleearth.mcmescripts.compiler;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import com.craftmend.thirdparty.iosocket.global.Global;
+import com.google.gson.*;
 import com.google.gson.stream.JsonReader;
 import com.mcmiddleearth.entities.EntitiesPlugin;
+import com.mcmiddleearth.entities.ai.goal.GoalType;
 import com.mcmiddleearth.entities.api.VirtualEntityFactory;
 import com.mcmiddleearth.entities.api.VirtualEntityGoalFactory;
 import com.mcmiddleearth.mcmescripts.debug.DebugManager;
 import com.mcmiddleearth.mcmescripts.debug.Modules;
+import com.mcmiddleearth.mcmescripts.event.EventGoalFactory;
+import com.mcmiddleearth.mcmescripts.event.position.EventPosition;
+import com.mcmiddleearth.mcmescripts.event.rotation.EventRotation;
+import com.mcmiddleearth.mcmescripts.event.target.EntityEventTarget;
+import org.bukkit.Location;
+import org.w3c.dom.events.EventTarget;
 
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.Vector;
+import java.util.logging.Logger;
 
 public class VirtualEntityGoalFactoryCompiler {
 
-    private static final String KEY_GOAL        = "goal";
+    private static final String KEY_GOAL        = "goal",
+
+                                KEY_TYPE               = "goal_type",
+                                KEY_TARGET             = "target",
+                                KEY_TARGET_LOCATION    = "target_location", // Should be called target position I think but not a great time to change it right now
+                                KEY_TARGET_ROTATION    = "target_rotation",
+                                KEY_CHECKPOINTS        = "checkpoints"
+    ;
 
     public static Optional<VirtualEntityGoalFactory> compile(JsonObject jsonObject) {
         VirtualEntityGoalFactory result = null;
@@ -56,5 +73,54 @@ public class VirtualEntityGoalFactoryCompiler {
         VirtualEntityGoalFactory factory
                 = gson.fromJson(new JsonReader(new StringReader(jsonObject.toString())),VirtualEntityGoalFactory.class);
         return factory;
+    }
+
+    public static Optional<EventGoalFactory> compileFromEditor(JsonObject jsonObject) {
+
+        JsonElement type = jsonObject.get(KEY_TYPE);
+        if(!(type instanceof JsonPrimitive)) {
+            DebugManager.warn(Modules.Trigger.create(TriggerCompiler.class),"Can't compile goal. Missing goal type.");
+            return Optional.empty();
+        }
+
+        GoalType goalType = GoalType.valueOf(type.getAsString().toUpperCase());
+        VirtualEntityGoalFactory factory = new VirtualEntityGoalFactory(goalType);
+
+        EntityEventTarget target = null;
+        JsonElement targetJson = jsonObject.get(KEY_TARGET);
+        if(targetJson instanceof JsonObject) {
+            target = TargetCompiler.compileEntityTarget(targetJson.getAsJsonObject());
+        }
+
+        EventPosition position = null;
+        JsonElement positionJson = jsonObject.get(KEY_TARGET_LOCATION);
+        if(positionJson instanceof JsonObject) {
+            position = PositionCompiler.compile(positionJson.getAsJsonObject());
+        }
+
+        EventRotation rotation = null;
+        JsonElement rotationJson = jsonObject.get(KEY_TARGET_ROTATION);
+        if(rotationJson instanceof JsonObject) {
+            rotation = RotationCompiler.compile(rotationJson.getAsJsonObject());
+        }
+
+        List<EventPosition> checkpoints = null;
+        switch (goalType){
+            case FOLLOW_CHECKPOINTS, RANDOM_CHECKPOINTS -> {
+                JsonElement checkPointsJson = jsonObject.get(KEY_CHECKPOINTS);
+                if(!(checkPointsJson instanceof JsonArray)) {
+                    DebugManager.warn(Modules.Trigger.create(TriggerCompiler.class),"Can't compile goal. Missing checkpoints.");
+                    return Optional.empty();
+                }
+                JsonArray checkpointsArray = checkPointsJson.getAsJsonArray();
+
+                checkpoints = new ArrayList<>();
+
+                for (JsonElement checkpoint : checkpointsArray) {
+                    checkpoints.add(PositionCompiler.compile(checkpoint.getAsJsonObject()));
+                }
+            }
+        }
+        return Optional.of(new EventGoalFactory(factory, target, position, rotation, checkpoints));
     }
 }

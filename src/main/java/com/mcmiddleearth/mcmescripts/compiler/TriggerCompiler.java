@@ -8,14 +8,12 @@ import com.mcmiddleearth.mcmescripts.action.Action;
 import com.mcmiddleearth.mcmescripts.condition.Condition;
 import com.mcmiddleearth.mcmescripts.debug.DebugManager;
 import com.mcmiddleearth.mcmescripts.debug.Modules;
-import com.mcmiddleearth.mcmescripts.selector.McmeEntitySelector;
+import com.mcmiddleearth.mcmescripts.selector.Selector;
 import com.mcmiddleearth.mcmescripts.trigger.DecisionTreeTrigger;
 import com.mcmiddleearth.mcmescripts.trigger.ExternalTrigger;
+import com.mcmiddleearth.mcmescripts.trigger.SimpleTrigger;
 import com.mcmiddleearth.mcmescripts.trigger.Trigger;
-import com.mcmiddleearth.mcmescripts.trigger.player.PlayerJoinTrigger;
-import com.mcmiddleearth.mcmescripts.trigger.player.PlayerQuitTrigger;
-import com.mcmiddleearth.mcmescripts.trigger.player.PlayerTalkTrigger;
-import com.mcmiddleearth.mcmescripts.trigger.player.VirtualPlayerAttackTrigger;
+import com.mcmiddleearth.mcmescripts.trigger.player.*;
 import com.mcmiddleearth.mcmescripts.trigger.timed.*;
 import com.mcmiddleearth.mcmescripts.trigger.virtual.AnimationChangeTrigger;
 import com.mcmiddleearth.mcmescripts.trigger.virtual.GoalFinishedTrigger;
@@ -29,6 +27,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.logging.Logger;
 
 public class TriggerCompiler {
 
@@ -50,6 +49,7 @@ public class TriggerCompiler {
                                 KEY_CURRENT_ANIMATION   = "current_animation",
                                 KEY_NEXT_ANIMATION      = "next_animation",
                                 KEY_PROCESS             = "process",
+                                KEY_COMMAND             = "command",
 
                                 VALUE_REAL_TIMED_TRIGGER            = "real_timed",
                                 VALUE_REAL_PERIODIC_TRIGGER         = "real_periodic",
@@ -59,12 +59,14 @@ public class TriggerCompiler {
                                 VALUE_PLAYER_JOIN_TRIGGER           = "player_join",
                                 VALUE_PLAYER_QUIT_TRIGGER           = "player_quit",
                                 VALUE_PLAYER_VIRTUAL_ATTACK_TRIGGER = "player_virtual_attack",
+                                VALUE_USE_ITEM_TRIGGER              = "use_item",
                                 VALUE_VIRTUAL_TALK_TRIGGER              = "virtual_talk",
                                 VALUE_VIRTUAL_STOP_TALK_TRIGGER         = "virtual_stop_talk",
                                 VALUE_GOAL_FINISHED_TRIGGER             = "goal_finished",
                                 VALUE_ANIMATION_CHANGE_TRIGGER          = "animation_change",
                                 VALUE_SELECTION_TRIGGER                 = "selection",
-                                VALUE_EXTERNAL_TRIGGER                  = "external";
+                                VALUE_EXTERNAL_TRIGGER                  = "external",
+                                VALUE_SIMPLE_TRIGGER                    = "simple";
 
 
     public static Set<Trigger> compile(JsonObject jsonData) {
@@ -137,7 +139,12 @@ public class TriggerCompiler {
                 }
                 break;
             case VALUE_PLAYER_TALK_TRIGGER:
-                trigger = new PlayerTalkTrigger(null);
+                String command = PrimitiveCompiler.compileString(jsonObject.get(KEY_COMMAND),"");
+                trigger = new PlayerTalkTrigger(null,command);
+                break;
+            case VALUE_USE_ITEM_TRIGGER:
+                String name = PrimitiveCompiler.compileString(jsonObject.get(KEY_NAME),"");
+                trigger = new UseItemTrigger(null,name);
                 break;
             case VALUE_PLAYER_JOIN_TRIGGER:
                 trigger = new PlayerJoinTrigger(null);
@@ -178,7 +185,7 @@ public class TriggerCompiler {
                         period = timeJson.getAsInt();
                     } catch(NumberFormatException ignore) {}
                 }
-                McmeEntitySelector mcmeEntitySelector = SelectorCompiler.compileMcmeEntitySelector(jsonObject);
+                Selector mcmeEntitySelector = SelectorCompiler.compileSelector(jsonObject);
                 JsonElement processJson = jsonObject.get(KEY_PROCESS);
                 SelectionTrigger.Process process;
                 if (processJson instanceof JsonPrimitive && processJson.getAsString().equalsIgnoreCase("leave")) {
@@ -192,12 +199,15 @@ public class TriggerCompiler {
                 trigger = new SelectionTrigger(null, period, mcmeEntitySelector, process);
                 break;
             case VALUE_EXTERNAL_TRIGGER:
-                String name = PrimitiveCompiler.compileString(jsonObject.get(KEY_NAME),null);
-                if(name == null) {
+                String itemName = PrimitiveCompiler.compileString(jsonObject.get(KEY_NAME),null);
+                if(itemName == null) {
                     DebugManager.warn(Modules.Location.create(LocationCompiler.class), "Can't compile " + VALUE_EXTERNAL_TRIGGER + " trigger. Missing name.");
                     return Optional.empty();
                 }
-                trigger = new ExternalTrigger(null,name);
+                trigger = new ExternalTrigger(null,itemName);
+                break;
+            case VALUE_SIMPLE_TRIGGER:
+                trigger = new SimpleTrigger();
                 break;
         }
         if(trigger == null) {
@@ -206,11 +216,17 @@ public class TriggerCompiler {
         }
         DecisionTreeTrigger.DecisionNode decisionNode = compileDecisionNode(jsonObject);
         trigger.setDecisionNode(decisionNode);
-        trigger.setLocation(LocationCompiler.compile(jsonObject.get(KEY_LOCATION)).orElse(null));
-        trigger.setPlayer(SelectorCompiler.compilePlayerSelector(jsonObject,KEY_PLAYER));
-        trigger.setEntity(SelectorCompiler.compileVirtualEntitySelector(jsonObject,KEY_PLAYER));
-        DecisionTreeTrigger finalTrigger = trigger;
-        LocationCompiler.compile(jsonObject.get(KEY_CENTER)).ifPresent(finalTrigger::setLocation);
+        trigger.setWorld(PrimitiveCompiler.compileString(jsonObject.get("world"),"world"));
+        //trigger.setLocation(LocationCompiler.compile(jsonObject.get(KEY_LOCATION)).orElse(null));
+        //trigger.setPlayer(SelectorCompiler.compileSelector(jsonObject,KEY_PLAYER));
+        //trigger.setEntity(SelectorCompiler.compileSelector(jsonObject,KEY_PLAYER));
+        //DecisionTreeTrigger finalTrigger = trigger;
+        //LocationCompiler.compile(jsonObject.get(KEY_CENTER)).ifPresent(finalTrigger::setLocation);
+
+
+
+
+
 
         JsonElement nameJson = jsonObject.get(KEY_NAME);
         if(nameJson != null && nameJson.isJsonPrimitive()) {
@@ -240,8 +256,9 @@ public class TriggerCompiler {
             node.setConditionSuccessTrigger(compileDecisionNode(thenData.getAsJsonObject()));
         }
         JsonElement elseData = jsonObject.get(KEY_ELSE);
-        if(thenData!=null) {
+        if(elseData!=null) {
             node.setConditionFailTrigger(compileDecisionNode(elseData.getAsJsonObject()));
+            Logger.getGlobal().warning("SETTING ELSE NODE");
         }
         return node;
     }

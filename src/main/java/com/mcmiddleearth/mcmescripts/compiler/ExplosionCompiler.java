@@ -6,7 +6,9 @@ import com.google.gson.JsonPrimitive;
 import com.mcmiddleearth.entities.effect.Explosion;
 import com.mcmiddleearth.mcmescripts.debug.DebugManager;
 import com.mcmiddleearth.mcmescripts.debug.Modules;
-import com.mcmiddleearth.mcmescripts.selector.McmeEntitySelector;
+import com.mcmiddleearth.mcmescripts.event.target.EntityEventTarget;
+import com.mcmiddleearth.mcmescripts.event.target.PlayerEventTarget;
+import com.mcmiddleearth.mcmescripts.selector.Selector;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 
@@ -44,21 +46,19 @@ public class ExplosionCompiler {
         return explosion;
     }
 
-    public static McmeEntitySelector getUnaffectedSelector(JsonObject jsonObject) {
-        JsonElement selectorElement = jsonObject.get(KEY_UNAFFECTED);
-        if(selectorElement instanceof JsonPrimitive) {
-            return new McmeEntitySelector(selectorElement.getAsString());
-        } else {
-            return null;
+    public static EntityEventTarget getUnaffectedTarget(JsonObject jsonObject) {
+        JsonObject unaffectedJson = jsonObject.getAsJsonObject(KEY_UNAFFECTED);
+        if(unaffectedJson != null){
+            return TargetCompiler.compileEntityTarget(unaffectedJson);
         }
+        return null;
     }
 
-    public static McmeEntitySelector getDamagerSelector(JsonObject jsonObject) {
-        JsonElement selectorElement = jsonObject.get(KEY_DAMAGER);
-        if(selectorElement instanceof JsonPrimitive) {
-            return new McmeEntitySelector(selectorElement.getAsString());
-        } else {
-            return null;
+    public static EntityEventTarget getDamagerTarget(JsonObject jsonObject) {
+        JsonObject unaffectedJson = jsonObject.getAsJsonObject(KEY_DAMAGER);
+        if(unaffectedJson != null){
+            return TargetCompiler.compileEntityTarget(unaffectedJson);
         }
+        return null;
     }
 }

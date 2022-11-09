@@ -1,25 +1,24 @@
 package com.mcmiddleearth.mcmescripts.action;
 
-import com.mcmiddleearth.entities.entities.McmeEntity;
-import com.mcmiddleearth.mcmescripts.debug.DebugManager;
+import com.mcmiddleearth.mcmescripts.action.targeted.EntityTargetedAction;
 import com.mcmiddleearth.mcmescripts.debug.Descriptor;
-import com.mcmiddleearth.mcmescripts.debug.Modules;
-import com.mcmiddleearth.mcmescripts.selector.McmeEntitySelector;
+import com.mcmiddleearth.mcmescripts.event.target.EntityEventTarget;
 import org.bukkit.potion.PotionEffect;
 
 import java.util.Random;
 import java.util.Set;
 
-public class PotionEffectAddAction extends SelectingAction<McmeEntity> {
+public class PotionEffectAddAction extends EntityTargetedAction {
 
     private static final Random random = new Random();
 
-    public PotionEffectAddAction(PotionEffect effect, Set<PotionEffectChoice> choices, McmeEntitySelector selector){
-        super(selector, (entity, context) -> {
-            if(effect!=null) {
-                //DebugManager.verbose(Modules.Action.execute(SetGoalAction.class), "Effect: " + effect.getType());
-                context.getDescriptor().addLine("Applying effect: "+effect.getType().getName());
-                entity.addPotionEffect(effect);
+    public PotionEffectAddAction(EntityEventTarget target, Set<PotionEffect> effects, Set<PotionEffectChoice> choices){
+        super(target, (entity, context) -> {
+            if(!effects.isEmpty()) {
+                effects.forEach(effect -> {
+                    context.getDescriptor().addLine("Applying effect: "+effect.getType().getName());
+                    entity.addPotionEffect(effect);
+                });
             }
             int weightSum = 0;
             for(PotionEffectChoice choice: choices) {
@@ -32,15 +31,19 @@ public class PotionEffectAddAction extends SelectingAction<McmeEntity> {
                 if(weightSum>=weightRandom) {
                     entity.addPotionEffect(choice.getEffect());
                     context.getDescriptor().addLine("Applying random effect: "+choice.getEffect().getType().getName());
-                    //DebugManager.verbose(Modules.Action.execute(SetGoalAction.class), "Random Effect: " + choice.getEffect().getType());
                     break;
                 }
             }
 
         });
         getDescriptor().indent()
-                .addLine("Effect: ");
-        addEffect(getDescriptor(), effect);
+                .addLine("Effects: ");
+
+        effects.forEach(choice -> {
+            addEffect(getDescriptor(),choice);
+        });
+
+
         if(!choices.isEmpty()) {
             getDescriptor().addLine("Potion effect choices: ").indent();
             choices.forEach(choice -> {
@@ -52,7 +55,6 @@ public class PotionEffectAddAction extends SelectingAction<McmeEntity> {
             getDescriptor().addLine("Potion effect choices: --none--");
         }
         getDescriptor().outdent();
-        //DebugManager.info(Modules.Action.create(this.getClass()),"Effect: "+effect+" Choices: "+choices.size());
     }
 
     public static void addEffect(Descriptor descriptor, PotionEffect effect) {
@@ -65,6 +67,7 @@ public class PotionEffectAddAction extends SelectingAction<McmeEntity> {
                 .addLine("Type: "+effect.hasIcon()).outdent();
     }
 
+    // TODO: Use generic loot table for this
     public static class PotionEffectChoice {
 
         private final PotionEffect effect;

@@ -1,23 +1,21 @@
 package com.mcmiddleearth.mcmescripts.condition;
 
-import com.mcmiddleearth.entities.entities.VirtualEntity;
 import com.mcmiddleearth.entities.entities.composite.BakedAnimationEntity;
+import com.mcmiddleearth.mcmescripts.condition.targeted.VirtualEntityTargetedCondition;
 import com.mcmiddleearth.mcmescripts.debug.Descriptor;
-import com.mcmiddleearth.mcmescripts.selector.Selector;
+import com.mcmiddleearth.mcmescripts.event.target.VirtualEntityEventTarget;
 
-import java.util.function.Function;
-
-public class AnimationCondition extends SelectingCondition<VirtualEntity> {
+public class AnimationCondition extends VirtualEntityTargetedCondition {
 
     private final String currentAnimation;
     private final Boolean manualAnimationControl;
     private final Boolean manualOverride;
     private final Boolean instantAnimationSwitching;
 
-    public AnimationCondition(Selector<VirtualEntity> selector, String currentAnimation,
+    public AnimationCondition(VirtualEntityEventTarget target, String currentAnimation,
                               Boolean manualAnimationControl,
                               Boolean instantAnimationSwitching, Boolean manualOverride) {
-        super(selector, entity -> {
+        super(target, entity -> {
             if(entity instanceof BakedAnimationEntity) {
                 return (currentAnimation == null || currentAnimation.equalsIgnoreCase(((BakedAnimationEntity)entity).getCurrentAnimation().getName()))
                     && (manualAnimationControl == null || manualAnimationControl == ((BakedAnimationEntity) entity).isManualAnimationControl())

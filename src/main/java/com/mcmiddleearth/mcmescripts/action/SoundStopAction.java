@@ -1,29 +1,33 @@
 package com.mcmiddleearth.mcmescripts.action;
 
-import com.craftmend.openaudiomc.api.interfaces.AudioApi;
-import com.mcmiddleearth.mcmescripts.debug.DebugManager;
-import com.mcmiddleearth.mcmescripts.debug.Modules;
-import com.mcmiddleearth.mcmescripts.selector.Selector;
-import org.bukkit.entity.Player;
+import com.mcmiddleearth.mcmescripts.action.targeted.PlayerTargetedAction;
+import com.mcmiddleearth.mcmescripts.event.position.EventPosition;
+import com.mcmiddleearth.mcmescripts.event.target.PlayerEventTarget;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.SoundCategory;
+import org.bukkit.util.Vector;
 
-public class SoundStopAction  extends SelectingAction<Player> {
+public class SoundStopAction extends PlayerTargetedAction {
 
-    public SoundStopAction(Selector<Player> selector, String musicId) {
-        super(selector, (player, context) -> {
-            //DebugManager.verbose(Modules.Action.execute(SoundStopAction.class),"musicId: "+musicId);
-            if(SoundStartAction.hasOpenAudio()) {
-                AudioApi audioApi = AudioApi.getInstance();
-                if (musicId == null || musicId.equalsIgnoreCase("")) {
-                    audioApi.getMediaApi().stopMedia(audioApi.getClient(player.getUniqueId()));
-                } else {
-                    audioApi.getMediaApi().stopMedia(audioApi.getClient(player.getUniqueId()), musicId);
-                }
+    public SoundStopAction(PlayerEventTarget target, String sound, String category) {
+        super(target, (player, context) -> {
+            if(sound != null && category != null){
+                player.stopSound(sound,SoundCategory.valueOf(category));
+            }
+            else if (sound != null){
+                player.stopSound(sound);
+            } else if (category != null){
+                // No way to stop all sounds in category in Spigot, so I'm using commands
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "stopsound " + player.getName() + " " + category.toLowerCase());
             } else {
-                DebugManager.warn(Modules.Action.execute(SoundStartAction.class),"OpenAudioMc plugin not found!");
+                // No way to stop all sounds in Spigot, so I'm using commands
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(),"stopsound " + player.getName());
             }
         });
-        //DebugManager.info(Modules.Action.create(this.getClass()),"MusicId: "+musicId);
         getDescriptor().indent()
-                .addLine("Music id: "+musicId).outdent();
+                .addLine("Sound: "+sound)
+                .addLine("Category: "+category)
+                .outdent();
     }
 }

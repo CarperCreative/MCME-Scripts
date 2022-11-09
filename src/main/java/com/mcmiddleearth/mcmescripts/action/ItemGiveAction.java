@@ -5,10 +5,11 @@ import com.google.gson.JsonPrimitive;
 import com.mcmiddleearth.entities.EntitiesPlugin;
 import com.mcmiddleearth.entities.PersistentDataKey;
 import com.mcmiddleearth.entities.entities.McmeEntity;
+import com.mcmiddleearth.mcmescripts.action.targeted.EntityTargetedAction;
 import com.mcmiddleearth.mcmescripts.compiler.ItemCompiler;
-import com.mcmiddleearth.mcmescripts.looting.ItemChoice;
+import com.mcmiddleearth.mcmescripts.event.target.EntityEventTarget;
+import com.mcmiddleearth.mcmescripts.looting.LootTableChoice;
 import com.mcmiddleearth.mcmescripts.looting.LootTable;
-import com.mcmiddleearth.mcmescripts.selector.Selector;
 import com.mcmiddleearth.mcmescripts.trigger.TriggerContext;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.EquipmentSlot;
@@ -20,20 +21,16 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Objects;
 import java.util.Set;
 
-public class ItemGiveAction extends SelectingAction<McmeEntity> {
+public class ItemGiveAction extends EntityTargetedAction {
 
-    public ItemGiveAction(Selector<McmeEntity> selector, Set<ItemStack> items, Set<ItemChoice> weightChoices,
+    public ItemGiveAction(EntityEventTarget target, Set<ItemStack> items, Set<LootTableChoice<ItemStack>> weightChoices,
                           @Nullable EquipmentSlot slot, int slotId, int duration) {
-        super(selector, (entity, context) -> {
-            //DebugManager.verbose(Modules.Action.execute(ItemGiveAction.class),"Selector: "+selector.getSelector()
-            //        + " Items: "+items.size()+ " Choices: "+ weightChoices.size()+" Slot: "+(slot!=null?slot.name():"null")+" "+slotId);
+        super(target, (entity, context) -> {
             items.forEach(item -> giveItem(entity, context, item, slot, slotId, duration));
 
-            LootTable lootTable = new LootTable(weightChoices);
-            lootTable.selectItems().forEach(item->giveItem(entity, context, item, slot, slotId, duration));
+            LootTable<ItemStack> lootTable = new LootTable<>(weightChoices);
+            lootTable.select().forEach(item->giveItem(entity, context, item, slot, slotId, duration));
         });
-        //DebugManager.info(Modules.Action.create(this.getClass()),"Selector: "+selector.getSelector()
-        //        + " item: "+items.size()+" Choices: "+ weightChoices.size()+" Slot: "+(slot!=null?slot.name():"null")+" "+slotId);
         getDescriptor().indent()
                 .addLine("Duration: "+duration)
                 .addLine("Slot no.: "+slotId)
@@ -74,10 +71,6 @@ public class ItemGiveAction extends SelectingAction<McmeEntity> {
                 ItemCompiler.addLore(meta, new JsonPrimitive(context.getMessage()));
             }
             context.getDescriptor().addLine("Adding lore: "+ Joiner.on(" ").join(Objects.requireNonNull(meta.getLore())));
-            /*Logger.getGlobal().info("type: "+item.getType());
-            Logger.getGlobal().info("Lore: "+meta.lore().size());
-            Logger.getGlobal().info("Enchant: "+meta.getEnchants().size());
-            Logger.getGlobal().info("has cmd: "+meta.hasCustomModelData());*/
         }
         item.setItemMeta(meta);
 

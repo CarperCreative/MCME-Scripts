@@ -1,17 +1,20 @@
 package com.mcmiddleearth.mcmescripts.action;
 
 import com.mcmiddleearth.entities.EntitiesPlugin;
-import com.mcmiddleearth.entities.entities.VirtualEntity;
-import com.mcmiddleearth.mcmescripts.selector.Selector;
+import com.mcmiddleearth.mcmescripts.action.targeted.VirtualEntityTargetedAction;
+import com.mcmiddleearth.mcmescripts.event.target.VirtualEntityEventTarget;
+import org.bukkit.Particle;
+import org.bukkit.World;
 
-public class DespawnAction extends SelectingAction<VirtualEntity> {
+public class DespawnAction extends VirtualEntityTargetedAction {
 
-    public DespawnAction(Selector<VirtualEntity> selector) {
-        super(selector, (entity,context) -> {
+    final boolean particles;
+    public DespawnAction(VirtualEntityEventTarget target, boolean particles) {
+        super(target, (entity,context) -> {
+            if(particles) context.getWorld().spawnParticle(Particle.CLOUD,entity.getLocation(),30,1.0f);
             EntitiesPlugin.getEntityServer().removeEntity(entity);
             context.getEntityContainer().removeEntity(entity);
-            //DebugManager.verbose(Modules.Action.execute(DespawnAction.class),"Despawn entity: "+entity.getName());
         });
-        //DebugManager.info(Modules.Action.create(this.getClass()), "Selector: "+selector.getSelector());
+        this.particles = particles;
     }
 }

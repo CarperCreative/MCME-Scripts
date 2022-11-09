@@ -1,24 +1,5 @@
 package com.mcmiddleearth.mcmescripts.bossbattle.unused;
 
-import com.mcmiddleearth.mcmescripts.action.bossbattle.TimelineSetAction;
-import com.mcmiddleearth.mcmescripts.quest.tags.AbstractTag;
-import com.mcmiddleearth.mcmescripts.quest.tags.StringTag;
-import com.mcmiddleearth.mcmescripts.trigger.DecisionTreeTrigger;
-import com.mcmiddleearth.mcmescripts.trigger.Trigger;
-import com.mcmiddleearth.mcmescripts.trigger.ITriggerContainer;
-import com.mcmiddleearth.mcmescripts.trigger.player.PlayerJoinTrigger;
-import com.mcmiddleearth.mcmescripts.trigger.player.PlayerQuitTrigger;
-import com.mcmiddleearth.mcmescripts.trigger.timed.OnceRealTimeTrigger;
-import com.mcmiddleearth.mcmescripts.trigger.timed.OnceServerTimeTrigger;
-import com.mcmiddleearth.mcmescripts.trigger.timed.PeriodicRealTimeTrigger;
-import com.mcmiddleearth.mcmescripts.trigger.timed.PeriodicServerTimeTrigger;
-import floo.network.elements.bossbattle.BossBattleElement;
-import floo.network.elements.bossbattle.EEndOfTimelineBehaviour;
-import floo.network.elements.bossbattle.TimelineElement;
-import floo.network.elements.bossbattle.TimelineSlotElement;
-import floo.network.elements.events.Event;
-import floo.network.elements.events.actions.Action;
-
 import java.util.*;
 
 /**

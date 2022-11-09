@@ -6,6 +6,8 @@ import com.mcmiddleearth.mcmescripts.bossbattle.BossBattle;
 import com.mcmiddleearth.mcmescripts.bossbattle.EEndOfTimelineBehaviour;
 import com.mcmiddleearth.mcmescripts.bossbattle.Timeline;
 import com.mcmiddleearth.mcmescripts.bossbattle.TimelineSlot;
+import com.mcmiddleearth.mcmescripts.debug.DebugManager;
+import com.mcmiddleearth.mcmescripts.debug.Modules;
 
 import java.util.*;
 
@@ -14,7 +16,8 @@ public class BossBattleCompiler {
     private static final String
             KEY_TIMELINES                           = "timelines",
             KEY_TIMELINE_SLOTS                      = "timeline_slots",
-            KEY_TRIGGERS                            = "triggers",
+            KEY_EVENTS                              = "events",
+            KEY_TRIGGER_EVENTS                      = "trigger_events",
             VALUE_DURATION                          = "duration",
             VALUE_NAME                              = "name",
             VALUE_END_OF_TIMELINE_BEHAVIOUR         = "end_of_timeline_behaviour",
@@ -60,13 +63,15 @@ public class BossBattleCompiler {
     private static TimelineSlot compileTimelineSlot(JsonObject jsonObject, BossBattle bossBattle) {
         JsonElement name = jsonObject.get(VALUE_NAME);
         JsonElement duration = jsonObject.get(VALUE_DURATION);
-        JsonElement triggers = jsonObject.get(KEY_TRIGGERS);
+        JsonElement events = jsonObject.get(KEY_EVENTS);
+        JsonElement triggerEvents = jsonObject.get(KEY_TRIGGER_EVENTS);
 
         return new TimelineSlot(
                 name.getAsString(),
                 bossBattle,
                 duration.getAsDouble(),
-                triggers.getAsJsonArray());
+                events != null ? events.getAsJsonArray() : null,
+                triggerEvents != null ? triggerEvents.getAsJsonArray() : null);
     }
 
     private static Timeline compileTimeline(JsonObject jsonObject, BossBattle bossBattle) {
@@ -81,8 +86,18 @@ public class BossBattleCompiler {
                 bossBattle,
                 timelineSlots,
                 duration.getAsDouble(),
-                EEndOfTimelineBehaviour.valueOf(endOfTimelineBehaviour.getAsString()),
+                EEndOfTimelineBehaviour.valueOf(endOfTimelineBehaviour.getAsString().toUpperCase()),
                 endOfTimelineBehaviourTimeline.getAsString());
 
+    }
+
+    public static Optional<String> getName(JsonObject jsonData) {
+        JsonElement element = jsonData.get(VALUE_NAME);
+        if(element!=null && element.isJsonPrimitive()) {
+            return Optional.of(element.getAsString());
+        } else {
+            DebugManager.warn(Modules.Script.create(ScriptCompiler.class),"Missing boss battle name.");
+            return Optional.empty();
+        }
     }
 }

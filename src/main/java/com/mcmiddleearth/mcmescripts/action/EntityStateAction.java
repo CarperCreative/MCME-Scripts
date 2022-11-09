@@ -1,27 +1,17 @@
 package com.mcmiddleearth.mcmescripts.action;
 
-import com.mcmiddleearth.entities.entities.VirtualEntity;
 import com.mcmiddleearth.entities.entities.composite.BakedAnimationEntity;
-import com.mcmiddleearth.entities.entities.composite.animation.BakedAnimation;
-import com.mcmiddleearth.mcmescripts.debug.DebugManager;
-import com.mcmiddleearth.mcmescripts.debug.Modules;
-import com.mcmiddleearth.mcmescripts.selector.Selector;
-import com.mcmiddleearth.mcmescripts.trigger.TriggerContext;
+import com.mcmiddleearth.mcmescripts.action.targeted.VirtualEntityTargetedAction;
+import com.mcmiddleearth.mcmescripts.event.target.VirtualEntityEventTarget;
 
-import java.util.function.BiConsumer;
+public class EntityStateAction extends VirtualEntityTargetedAction {
 
-public class EntityStateAction extends SelectingAction<VirtualEntity> {
-
-    public EntityStateAction(Selector<VirtualEntity> selector, String state) {
-        super(selector, (entity, context) -> {
-            //DebugManager.verbose(Modules.Action.execute(EntityStateAction.class),"Selector: "+selector.getSelector()
-            //                                                                     + " State: "+state);
+    public EntityStateAction(VirtualEntityEventTarget target, String state) {
+        super(target, (entity, context) -> {
             if(entity instanceof BakedAnimationEntity) {
                 ((BakedAnimationEntity)entity).setState(state);
             }
         });
-        //DebugManager.info(Modules.Action.create(this.getClass()),"Selector: "+selector.getSelector()
-        //                                                                + " State: "+state);
         getDescriptor().indent().addLine("State: "+state).outdent();
     }
 }

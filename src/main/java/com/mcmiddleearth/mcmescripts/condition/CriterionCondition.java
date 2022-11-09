@@ -1,23 +1,23 @@
 package com.mcmiddleearth.mcmescripts.condition;
 
 import com.mcmiddleearth.mcmescripts.debug.Descriptor;
-import com.mcmiddleearth.mcmescripts.selector.Selector;
+import com.mcmiddleearth.mcmescripts.event.target.IEventTarget;
 import com.mcmiddleearth.mcmescripts.trigger.TriggerContext;
 
-public class CriterionCondition<T> extends Condition {
+public class CriterionCondition extends Condition {
 
     private final Criterion test;
-    private final Selector<T> selector;
+    private final IEventTarget<?> target;
 
-    public CriterionCondition(Selector<T> selector, Criterion test) {
+    public CriterionCondition(IEventTarget<?> target, Criterion test) {
         this.test = test;
-        this.selector = selector;
+        this.target = target;
     }
 
     @Override
     public boolean test(TriggerContext context) {
-        int size = selector.select(context).size();
-        context.getDescriptor() //.add(super.getDescriptor()).indent()
+        int size = target.getTargets(context).size();
+        context.getDescriptor()
                 .addLine("Condition description: ").indent().add(getDescriptor()).outdent()
                 .addLine("Selected quantity: "+size);
         boolean result = test.apply(size);
@@ -28,7 +28,7 @@ public class CriterionCondition<T> extends Condition {
     @Override
     public Descriptor getDescriptor() {
         return super.getDescriptor().indent()
-                .addLine("Selector: "+selector.getSelector())
+                .addLine("target: " + target.toString())
                 .addLine("Criterion: "+test.getComparator()+test.getLimit())
                 .outdent();
     }

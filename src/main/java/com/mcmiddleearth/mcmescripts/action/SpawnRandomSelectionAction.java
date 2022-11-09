@@ -7,9 +7,11 @@ import com.mcmiddleearth.entities.entities.McmeEntity;
 import com.mcmiddleearth.entities.exception.InvalidDataException;
 import com.mcmiddleearth.entities.exception.InvalidLocationException;
 import com.mcmiddleearth.mcmescripts.MCMEScripts;
+import com.mcmiddleearth.mcmescripts.action.targeted.EntityTargetedAction;
 import com.mcmiddleearth.mcmescripts.debug.DebugManager;
 import com.mcmiddleearth.mcmescripts.debug.Descriptor;
 import com.mcmiddleearth.mcmescripts.debug.Modules;
+import com.mcmiddleearth.mcmescripts.event.target.EntityEventTarget;
 import com.mcmiddleearth.mcmescripts.selector.Selector;
 import com.mcmiddleearth.mcmescripts.trigger.TriggerContext;
 import org.apache.commons.math3.util.FastMath;
@@ -23,14 +25,13 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
-public class SpawnRandomSelectionAction extends SelectingAction<McmeEntity> {
+public class SpawnRandomSelectionAction extends EntityTargetedAction {
 
-    public SpawnRandomSelectionAction(Selector<McmeEntity> selector, RandomSpawnData data, int lifespan) {
-        super(selector, (entity,context) -> {
+    public SpawnRandomSelectionAction(EntityEventTarget target, RandomSpawnData data, int lifespan) {
+        super(target, (entity,context) -> {
             DebugManager.verbose(Modules.Action.execute(SpawnRandomSelectionAction.class),"Selected entity: "+entity.getName());
             data.spawn(context, entity.getLocation(), lifespan);
         });
-        //DebugManager.info(Modules.Action.create(this.getClass()),"Selector: "+selector.getSelector());
         getDescriptor().indent().add(data.getDescriptor()).outdent();
     }
 
@@ -43,7 +44,7 @@ public class SpawnRandomSelectionAction extends SelectingAction<McmeEntity> {
 
         private VirtualEntityGoalFactory goalFactory = null;
 
-        private Selector<McmeEntity> goalTargetSelector = null;
+        private Selector goalTargetSelector = null;
 
         private double probability = 1;
 
@@ -136,7 +137,7 @@ public class SpawnRandomSelectionAction extends SelectingAction<McmeEntity> {
                                     factory.withLocation(spawnLocations[finalI]);
                                     if(name!=null) factory.withDisplayName(name);
                                     if(serverSide) {
-                                        SpawnAction.spawnRealEntity(factory);
+                                        SpawnAction.spawnRealEntity(factory,lifespan,spawnLocations[0]);
                                     } else {
                                         McmeEntity entity = EntitiesPlugin.getEntityServer().spawnEntity(factory);
                                         //Logger.getGlobal().info("Spawn done!");
@@ -215,7 +216,7 @@ public class SpawnRandomSelectionAction extends SelectingAction<McmeEntity> {
         }
 
         private void updateGoal(TriggerContext context, Choice selectedChoice) {
-            McmeEntity goalTarget = goalTargetSelector.select(context).stream().findFirst().orElse(null);
+            McmeEntity goalTarget = goalTargetSelector.selectAll(context).stream().findFirst().orElse(null);
             context.getDescriptor().addLine("Goal target: "+(goalTarget!=null?goalTarget.getName():"--none--"));
             if (goalFactory != null) {
                 if (goalTarget != null) {
@@ -259,7 +260,7 @@ public class SpawnRandomSelectionAction extends SelectingAction<McmeEntity> {
             return this;
         }
 
-        public RandomSpawnData withGoalTargetSelector(Selector<McmeEntity> goalTargetSelector) {
+        public RandomSpawnData withGoalTargetSelector(Selector goalTargetSelector) {
             this.goalTargetSelector = goalTargetSelector;
             return this;
         }

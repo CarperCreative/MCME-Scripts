@@ -1,5 +1,7 @@
 package com.mcmiddleearth.mcmescripts;
 
+import com.mcmiddleearth.mcmescripts.bossbattle.BossBattleManager;
+import com.mcmiddleearth.mcmescripts.command.BossBattleCommandHandler;
 import com.mcmiddleearth.mcmescripts.command.PartyCommandHandler;
 import com.mcmiddleearth.mcmescripts.command.ScriptsCommandHandler;
 import com.mcmiddleearth.mcmescripts.debug.DebugManager;
@@ -36,6 +38,7 @@ public final class MCMEScripts extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new ChestListener(),this);
         //BukkitAudiences.create(this);
         setExecutor("scripts", new ScriptsCommandHandler("scripts"));
+        setExecutor("bossbattle", new BossBattleCommandHandler("bossbattle"));
         setExecutor("party", new PartyCommandHandler("party"));
         Bukkit.getScheduler().runTaskLater(this, this::enableScripts,
                                             MCMEScripts.getConfigInt(ConfigKeys.START_UP_DELAY,95));
@@ -53,6 +56,8 @@ public final class MCMEScripts extends JavaPlugin {
         timedTriggerManager.startChecker();
         QuestManager.readQuests();
         QuestManager.startChecker();
+
+        BossBattleManager.readBossBattles();
     }
 
     public void disableScripts() {

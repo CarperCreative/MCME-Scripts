@@ -1,45 +1,31 @@
 package com.mcmiddleearth.mcmescripts.looting;
 
-import com.mcmiddleearth.mcmescripts.component.EnchantmentChoice;
-import com.mcmiddleearth.mcmescripts.component.WrappedEnchantment;
-import org.bukkit.inventory.ItemStack;
-
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 
-public class LootTable {
+public class LootTable<T> {
 
-    private final Set<ItemChoice> itemChoices;
-    private final Set<EnchantmentChoice> enchantmentChoices;
+    private final Set<LootTableChoice<T>> choices;
 
     private static final Random random = new Random();
 
-    public LootTable(Set<?> choices) {
-        itemChoices = new HashSet<>();
-        enchantmentChoices = new HashSet<>();
-        if(choices != null) {
-            choices.forEach(choice -> {
-                if (choice instanceof ItemChoice) {
-                    itemChoices.add((ItemChoice) choice);
-                } else if (choice instanceof EnchantmentChoice) {
-                    enchantmentChoices.add((EnchantmentChoice) choice);
-                }
-            });
-        }
+    public LootTable(Set<LootTableChoice<T>> choices) {
+        this.choices = choices;
     }
 
-    public Set<ItemStack> selectItems() {
-        if(itemChoices == null) return Collections.emptySet();
+    public Set<T> select() {
+        if(choices == null) return Collections.emptySet();
 
         int weightSum = 0;
-        for(ItemChoice choice: itemChoices) {
+        for(LootTableChoice<T> choice : choices) {
             weightSum+=choice.getWeight();
         }
+
         int weightRandom = random.nextInt(weightSum+1);
         weightSum = 0;
-        for(ItemChoice choice: itemChoices) {
+
+        for(LootTableChoice<T> choice : choices) {
             weightSum+=choice.getWeight();
             if(weightSum>=weightRandom) {
                 return choice.getItems();
@@ -48,22 +34,15 @@ public class LootTable {
         return Collections.emptySet();
     }
 
-    public Set<WrappedEnchantment> selectEnchantments() {
-        if(enchantmentChoices == null) return Collections.emptySet();
-
-        int weightSum = 0;
-        for(EnchantmentChoice choice: enchantmentChoices) {
-            weightSum+=choice.getWeight();
+    /*public Descriptor getDescriptor() {
+        Descriptor descriptor = new Descriptor();
+        if(!choices.isEmpty()) {
+            descriptor.addLine("Loot table choices: ").indent();
+            choices.forEach(choice -> descriptor.add(choice.getDescriptor()));
+            descriptor.outdent();
+        } else {
+            descriptor.addLine("Loot table choices: --none--");
         }
-        int weightRandom = random.nextInt(weightSum+1);
-        weightSum = 0;
-        for(EnchantmentChoice choice: enchantmentChoices) {
-            weightSum+=choice.getWeight();
-            if(weightSum>=weightRandom) {
-                return choice.getEnchantments();
-            }
-        }
-        return Collections.emptySet();
-    }
-
+        return descriptor;
+    }*/
 }

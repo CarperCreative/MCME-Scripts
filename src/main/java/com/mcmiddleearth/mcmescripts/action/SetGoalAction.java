@@ -1,46 +1,41 @@
 package com.mcmiddleearth.mcmescripts.action;
 
-import com.mcmiddleearth.entities.ai.goal.Goal;
 import com.mcmiddleearth.entities.api.VirtualEntityGoalFactory;
 import com.mcmiddleearth.entities.entities.McmeEntity;
-import com.mcmiddleearth.entities.entities.VirtualEntity;
 import com.mcmiddleearth.entities.exception.InvalidDataException;
 import com.mcmiddleearth.entities.exception.InvalidLocationException;
+import com.mcmiddleearth.mcmescripts.action.targeted.VirtualEntityTargetedAction;
 import com.mcmiddleearth.mcmescripts.debug.DebugManager;
 import com.mcmiddleearth.mcmescripts.debug.Modules;
-import com.mcmiddleearth.mcmescripts.selector.McmeEntitySelector;
-import com.mcmiddleearth.mcmescripts.selector.Selector;
+import com.mcmiddleearth.mcmescripts.event.EventGoalFactory;
+import com.mcmiddleearth.mcmescripts.event.target.EntityEventTarget;
+import com.mcmiddleearth.mcmescripts.event.target.VirtualEntityEventTarget;
 
 import java.util.List;
 
-public class SetGoalAction extends SelectingAction<VirtualEntity> {
+public class SetGoalAction extends VirtualEntityTargetedAction {
 
-    public SetGoalAction(VirtualEntityGoalFactory goalFactory, Selector<VirtualEntity> selector, McmeEntitySelector goalTargetSelector) {
-        super(selector, (entity,context) -> {
+    public SetGoalAction(VirtualEntityEventTarget target, EventGoalFactory eventGoalFactory) {
+        super(target, (entity,context) -> {
             try {
-                //DebugManager.verbose(Modules.Action.execute(SetGoalAction.class),"Target entity: "+entity.getName());
-                List<McmeEntity> goalTargets = goalTargetSelector.select(context);
+                /*List<McmeEntity> goalTargets = goalTargetSelector.getTargets(context);
                 if(goalTargets.isEmpty()) {
-                    context.getDescriptor().addLine("Selected Enemies: --none--");
+                    context.getDescriptor().addLine("Selected goals: --none--");
                 } else {
-                    context.getDescriptor().addLine("Selected Enemies:").indent();
-                    goalTargets.forEach(target -> context.getDescriptor().addLine(target.getName()));
+                    context.getDescriptor().addLine("Selected goals:").indent();
+                    goalTargets.forEach(goalTarget -> context.getDescriptor().addLine(goalTarget.getName()));
                     context.getDescriptor().outdent();
                 }
                 if (!goalTargets.isEmpty()) {
                     goalFactory.withTargetEntity(goalTargets.get(0));
-                }
-                entity.setGoal(goalFactory.build(entity));
+                }*/
+                entity.setGoal(eventGoalFactory.getFactory(context).build(entity));
             } catch (InvalidLocationException | InvalidDataException e) {
                 DebugManager.warn(Modules.Action.execute(SetGoalAction.class), "Can't assign goal to "+entity.getName()+". "+e.getClass().getSimpleName()+" "+e.getMessage());
                 e.printStackTrace();
             }
         });
         getDescriptor().indent()
-                .addLine("Goal: "+goalFactory.getGoalType())
-                .addLine("Goal target entity: "+goalFactory.getTargetEntity().getName())
-                .addLine("Goal target location: "+goalFactory.getTargetLocation())
-                .addLine("Target selector: "+goalTargetSelector).outdent();
-        //DebugManager.info(Modules.Action.create(this.getClass()),"Goal type: "+(goalFactory!=null?goalFactory.getGoalType().name():"null"));
+                .addLine("Goal Factory: "+eventGoalFactory);
     }
 }

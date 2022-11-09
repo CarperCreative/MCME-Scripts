@@ -13,20 +13,16 @@ public class TriggerUnregisterAction extends Action {
 
     public TriggerUnregisterAction(String triggerName) {
         triggerNames.add(triggerName);
-        //DebugManager.info(Modules.Action.create(this.getClass()),"Trigger: "+triggerName);
         buildDescriptor(triggerNames);
     }
 
     public TriggerUnregisterAction(Set<String> triggerNames) {
         this.triggerNames.addAll(triggerNames);
-        //this.triggerNames.forEach(trigger -> DebugManager.info(Modules.Action.create(this.getClass()),
-        //        "Trigger: "+trigger));
         buildDescriptor(triggerNames);
     }
 
     public TriggerUnregisterAction(Trigger trigger) {
         triggers.add(trigger);
-        //DebugManager.info(Modules.Action.create(this.getClass()),"Trigger: "+trigger.getClass().getSimpleName());
         getDescriptor().indent()
                 .addLine("Trigger: ").indent()
                 .addLine(trigger.getClass().getSimpleName()+"- Name: "+trigger.getName()).outdent().outdent();
@@ -42,7 +38,6 @@ public class TriggerUnregisterAction extends Action {
 
     @Override
     public void handler(TriggerContext context) {
-        //DebugManager.verbose(Modules.Action.execute(this.getClass()),"Unregistering "+ triggerNames.size()+" trigger names.");
         triggerNames.forEach(name-> context.getTriggerContainer().getTriggers(name).forEach(Trigger::unregister));
         triggers.forEach(Trigger::unregister);
     }

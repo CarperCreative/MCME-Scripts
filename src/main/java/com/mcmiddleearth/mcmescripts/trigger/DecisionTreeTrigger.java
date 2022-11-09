@@ -5,6 +5,7 @@ import com.mcmiddleearth.mcmescripts.condition.Condition;
 import com.mcmiddleearth.mcmescripts.debug.DebugManager;
 import com.mcmiddleearth.mcmescripts.debug.Descriptor;
 import com.mcmiddleearth.mcmescripts.debug.Modules;
+import lombok.extern.java.Log;
 
 import java.util.Collection;
 import java.util.Collections;

@@ -2,6 +2,7 @@ package com.mcmiddleearth.mcmescripts.quest;
 
 import com.google.gson.JsonObject;
 import com.google.gson.stream.JsonWriter;
+import com.mcmiddleearth.mcmescripts.ITagContainer;
 import com.mcmiddleearth.mcmescripts.quest.tags.AbstractTag;
 import com.mcmiddleearth.mcmescripts.quest.tags.StringTag;
 
@@ -14,7 +15,7 @@ import java.util.Map;
 /**
  * Represents progress of a party in a quest.
  */
-public class QuestData {
+public class QuestData implements ITagContainer {
 
     /**
      * Quest name.
@@ -130,6 +131,11 @@ public class QuestData {
 
     public void setTag(AbstractTag<?> tag) {
         tags.put(tag.getName(), tag);
+    }
+
+    @Override
+    public AbstractTag<?> getTag(String name) {
+        return tags.get(name);
     }
 
     public void deleteTag(String name) {

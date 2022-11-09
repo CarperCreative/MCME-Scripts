@@ -1,8 +1,10 @@
 package com.mcmiddleearth.mcmescripts.bossbattle;
 
+import com.mcmiddleearth.entities.api.EntityAPI;
 import com.mcmiddleearth.entities.entities.McmeEntity;
 import com.mcmiddleearth.mcmescripts.IEntityContainer;
-import com.mcmiddleearth.mcmescripts.action.bossbattle.TimelineSetAction;
+import com.mcmiddleearth.mcmescripts.ITagContainer;
+import com.mcmiddleearth.mcmescripts.action.bossbattle.GoToTimelineAction;
 import com.mcmiddleearth.mcmescripts.quest.tags.AbstractTag;
 import com.mcmiddleearth.mcmescripts.trigger.DecisionTreeTrigger;
 import com.mcmiddleearth.mcmescripts.trigger.ITriggerContainer;
@@ -10,6 +12,7 @@ import com.mcmiddleearth.mcmescripts.trigger.Trigger;
 import com.mcmiddleearth.mcmescripts.trigger.timed.OnceRealTimeTrigger;
 
 import java.util.*;
+import java.util.logging.Logger;
 
 /**
  * Represents a quest of a party of players. If there are two parties doing the same quest at the same time
@@ -18,7 +21,7 @@ import java.util.*;
  * A quest consists of one or several stages. Each stage is a script. If a stage is enabled it can be triggered and loaded
  * like any script depending on given conditions.
  */
-public class BossBattle implements ITriggerContainer, IEntityContainer {
+public class BossBattle implements ITriggerContainer, IEntityContainer, ITagContainer {
 
     private final String name;
     private final Map<String,Timeline> timelines = new HashMap<>();
@@ -32,7 +35,7 @@ public class BossBattle implements ITriggerContainer, IEntityContainer {
     /**
      * Triggers for switching between timeline slots
      */
-    private Set<Trigger> timelineTriggers;
+    private final Set<Trigger> timelineTriggers = new HashSet<>();
 
     public BossBattle(String name){
         this.name = name;
@@ -52,9 +55,15 @@ public class BossBattle implements ITriggerContainer, IEntityContainer {
     }
 
     public void updateActiveTimeline(String newTimelineName, int newSlotIndex) {
-
         // Deactivate triggers associated with the old timeline slot
-        timelines.get(currentTimelineName).getSlots().get(currentTimelineSlotIndex).deactivateTriggers();
+        Timeline currentTimeline = timelines.get(currentTimelineName);
+        TimelineSlot currentTimelineSlot = currentTimeline != null ? currentTimeline.getSlots().get(currentTimelineSlotIndex) : null;
+        if (currentTimelineSlot != null) currentTimelineSlot.deactivateTriggers();
+
+        // Remove queued timelines
+        while (timelineTriggers.size() > 0){
+            timelineTriggers.iterator().next().unregister();
+        }
 
         currentTimelineSlotIndex = newSlotIndex;
         currentTimelineName = newTimelineName;
@@ -65,41 +74,58 @@ public class BossBattle implements ITriggerContainer, IEntityContainer {
         queueNextTimelineConfiguration();
     }
 
+    public void restartTimeline() {
+        updateActiveTimeline(currentTimelineName,currentTimelineSlotIndex);
+    }
+
     private void queueNextTimelineConfiguration(){
         Timeline currentTimeline = timelines.get(currentTimelineName);
 
-        currentTimelineSlotIndex++;
-
-        int targetTimelineSlotIndex = currentTimelineSlotIndex + 1;
-        String targetTimelineName = "";
-
         // If the current timeline slot is the last timeline slot of the timeline, the timeline's end behaviour determines what happens next
-        if(currentTimelineSlotIndex >= currentTimeline.getSlots().size()){
+        if(currentTimelineSlotIndex+1 >= currentTimeline.getSlots().size()){
 
             switch (currentTimeline.getEndOfTimelineBehaviour()){
-                case CONTINUE       -> targetTimelineSlotIndex = currentTimelineSlotIndex;
-                case LOOP           -> targetTimelineSlotIndex = 0;
+                case LOOP           -> {
+                    int targetTimelineSlotIndex = 0;
+                    queueTimelineConfiguration(currentTimelineName,targetTimelineSlotIndex);
+                    Logger.getGlobal().info("End of timeline. (LOOP) Queuing timeline configuration for " + getName() + " as Timeline: " + currentTimelineName + ", slot: " + targetTimelineSlotIndex);
+                }
                 case GO_TO_TIMELINE -> {
-                    targetTimelineName = currentTimeline.getEndOfTimelineNextTimelineName();
-                    targetTimelineSlotIndex = 0;
+                    String targetTimelineName = currentTimeline.getEndOfTimelineNextTimelineName();
+                    int targetTimelineSlotIndex = 0;
+                    queueTimelineConfiguration(targetTimelineName,targetTimelineSlotIndex);
+                    Logger.getGlobal().info("End of timeline. (GO TO) Queuing timeline configuration for " + getName() + " as Timeline: " + targetTimelineName + ", slot: " + targetTimelineSlotIndex);
+                }
+                case CONTINUE           -> {
+                    Logger.getGlobal().info("End of timeline. (CONTINUE) Timeline set as continue for " + getName() + ", no new timeline configuration is queued.");
                 }
             }
+        } else {
+            queueTimelineConfiguration(currentTimelineName,currentTimelineSlotIndex+1);
+            Logger.getGlobal().info("Queuing timeline configuration for " + getName() + " as Timeline: " + currentTimelineName + ", slot: " + currentTimelineSlotIndex+1);
         }
-        queueTimelineConfiguration(targetTimelineName,targetTimelineSlotIndex);
     }
 
     private void queueTimelineConfiguration(String targetTimelineName, int targetTimelineSlotIndex){
         Timeline currentTimeline = timelines.get(currentTimelineName);
+        TimelineSlot currentTimelineSlot = currentTimeline.getSlots().get(currentTimelineSlotIndex);
 
         // Set up an event for switching the current timeline
-        long time = System.currentTimeMillis() + (long) currentTimeline.getDuration();
-        DecisionTreeTrigger trigger = new OnceRealTimeTrigger(new TimelineSetAction(targetTimelineName,targetTimelineSlotIndex), time);
+        long time = System.currentTimeMillis() + (long) (currentTimelineSlot.getDuration() * 1000);
+        DecisionTreeTrigger trigger = new OnceRealTimeTrigger(new GoToTimelineAction(new TimelineConfiguration(targetTimelineName,targetTimelineSlotIndex)), time);
+        trigger.setName("Queued Timeline Configuration");
         trigger.setCallOnce(true);
         trigger.register(this);
+        Logger.getGlobal().info("Queued new timeline configuration for " + getName() + ", in " + (long) (currentTimelineSlot.getDuration()*1000) + " ms.");
     }
 
     public void setTag(AbstractTag<?> tag) {
         tags.put(tag.getName(), tag);
+    }
+
+    @Override
+    public AbstractTag<?> getTag(String name) {
+        return tags.get(name);
     }
 
     public void deleteTag(String name) {
@@ -143,5 +169,28 @@ public class BossBattle implements ITriggerContainer, IEntityContainer {
     @Override
     public void removeEntity(McmeEntity entity) {
         entities.remove(entity);
+    }
+
+    public void unregisterAllTriggers(){
+        for(String timelineName : timelines.keySet()){
+            timelines.get(timelineName).getSlots().forEach(TimelineSlot::deactivateTriggers);
+        }
+        unregisterTimelineTriggers();
+    }
+
+    public void unregisterTimelineTriggers(){
+        // Removing like this to prevent ConcurrentModificationException because trigger.unregister() also removes it from the triggers set
+        while (getTriggers().size() > 0){
+            getTriggers().iterator().next().unregister();
+        }
+    }
+
+    public void stop() {
+        unregisterAllTriggers();
+        for (McmeEntity entity : entities) {
+            Logger.getGlobal().warning("Removing entity: " + entity.getName());
+            EntityAPI.removeEntity(entity); // TODO: Why doesn't entity.remove() work? What does that do
+            //entity.remove();
+        }
     }
 }

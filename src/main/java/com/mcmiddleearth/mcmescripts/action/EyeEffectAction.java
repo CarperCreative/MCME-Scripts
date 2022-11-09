@@ -1,16 +1,14 @@
 package com.mcmiddleearth.mcmescripts.action;
 
 import com.mcmiddleearth.mcmescripts.MCMEScripts;
-import com.mcmiddleearth.mcmescripts.debug.DebugManager;
-import com.mcmiddleearth.mcmescripts.debug.Modules;
+import com.mcmiddleearth.mcmescripts.action.targeted.PlayerTargetedAction;
+import com.mcmiddleearth.mcmescripts.event.target.PlayerEventTarget;
 import com.mcmiddleearth.mcmescripts.listener.PlayerEyeEffectBlockListener;
-import com.mcmiddleearth.mcmescripts.selector.Selector;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
-import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -19,12 +17,10 @@ import org.bukkit.util.Vector;
 import java.util.HashSet;
 import java.util.Set;
 
-public class EyeEffectAction extends SelectingAction<Player> {
+public class EyeEffectAction extends PlayerTargetedAction {
 
-    public EyeEffectAction(Selector<Player> selector, int duration) {
-        super(selector, (player, context) -> {
-            //DebugManager.verbose(Modules.Action.execute(EyeEffectAction.class),"Selector: "+selector.getSelector()
-            //                                            + " Player: "+player.getName());
+    public EyeEffectAction(PlayerEventTarget target, int duration) {
+        super(target, (player, context) -> {
             player.teleport(player.getLocation().toBlockLocation().add(new Vector(0.5,0,0.5)));
             Block block = player.getLocation().getWorld().getBlockAt(player.getLocation()).getRelative(BlockFace.UP);
             Block[] adjacent = new Block[4];
@@ -64,7 +60,6 @@ public class EyeEffectAction extends SelectingAction<Player> {
                 }
             }.runTaskLater(MCMEScripts.getInstance(),duration);
         });
-        //DebugManager.info(Modules.Action.create(this.getClass()),"Selector: "+selector.getSelector());
         getDescriptor().indent().addLine("Duration: "+duration).outdent();
     }
 }

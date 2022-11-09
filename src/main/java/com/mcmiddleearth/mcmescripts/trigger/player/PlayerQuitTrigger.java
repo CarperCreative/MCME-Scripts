@@ -19,8 +19,7 @@ public class PlayerQuitTrigger extends BukkitEventTrigger {
     @EventHandler
     public void playerQuit(PlayerQuitEvent event) {
         TriggerContext context = new TriggerContext(this)
-                .withContext("PlayerQuitTrigger.PlayerWhoQuit",event.getPlayer())
-                .withContext("PlayerQuitTrigger.QuitReason",event.getReason());
+                .withContext("PlayerQuitTrigger.PlayerWhoQuit",event.getPlayer());
         context.withPlayer(event.getPlayer());
         call(context);
         //DebugManager.verbose(Modules.Trigger.call(this.getClass()),

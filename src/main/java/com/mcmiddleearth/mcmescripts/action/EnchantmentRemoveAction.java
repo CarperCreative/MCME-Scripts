@@ -1,28 +1,25 @@
 package com.mcmiddleearth.mcmescripts.action;
 
-import com.mcmiddleearth.entities.entities.McmeEntity;
-import com.mcmiddleearth.mcmescripts.component.EnchantmentChoice;
+import com.mcmiddleearth.mcmescripts.action.targeted.EntityTargetedAction;
 import com.mcmiddleearth.mcmescripts.component.ItemFilter;
 import com.mcmiddleearth.mcmescripts.component.WrappedEnchantment;
 import com.mcmiddleearth.mcmescripts.debug.Descriptor;
+import com.mcmiddleearth.mcmescripts.event.target.EntityEventTarget;
 import com.mcmiddleearth.mcmescripts.looting.LootTable;
-import com.mcmiddleearth.mcmescripts.selector.Selector;
+import com.mcmiddleearth.mcmescripts.looting.LootTableChoice;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.*;
 
-public class EnchantmentRemoveAction extends SelectingAction<McmeEntity> {
+public class EnchantmentRemoveAction extends EntityTargetedAction {
 
-    public EnchantmentRemoveAction(Selector<McmeEntity> selector, Set<ItemFilter> itemFilters, Set<WrappedEnchantment> enchantments, Set<EnchantmentChoice> enchantmentChoices, int quantity) {
-        super(selector, (entity, context) -> {
-            //DebugManager.verbose(Modules.Action.execute(EnchantmentRemoveAction.class),"Selector: "+selector.getSelector()+" Filters:"+itemFilters.size()
-            //        + " Enchantments: "+enchantments.size()+ " Choices: "+ enchantmentChoices.size()+" Quantity: "+quantity);
-
+    public EnchantmentRemoveAction(EntityEventTarget target, Set<ItemFilter> itemFilters, Set<WrappedEnchantment> enchantments, Set<LootTableChoice<WrappedEnchantment>> enchantmentChoices, int quantity) {
+        super(target, (entity, context) -> {
             int calculatedQuantity = quantity;
             List<ItemStack> applyItems = new ArrayList<>();
-            LootTable lootTable = new LootTable(enchantmentChoices);
+            LootTable<WrappedEnchantment> lootTable = new LootTable<>(enchantmentChoices);
 
             Inventory entityInventory = entity.getInventory();
             for (ItemStack entityItem : entityInventory) {
@@ -45,7 +42,7 @@ public class EnchantmentRemoveAction extends SelectingAction<McmeEntity> {
             if (calculatedQuantity >= 0) {
                 for (ItemStack applyItem : applyItems) {
                     Set<WrappedEnchantment> removeEnchantments = new HashSet<>(enchantments);
-                    removeEnchantments.addAll(lootTable.selectEnchantments());
+                    removeEnchantments.addAll(lootTable.select());
                     removeEnchantment(applyItem, removeEnchantments);
                     context.getDescriptor().addLine("Removing enchantment: "+applyItem.getType().name());
                 }
@@ -59,7 +56,7 @@ public class EnchantmentRemoveAction extends SelectingAction<McmeEntity> {
                         break;
                     }
                     Set<WrappedEnchantment> removeEnchantments = new HashSet<>(enchantments);
-                    removeEnchantments.addAll(lootTable.selectEnchantments());
+                    removeEnchantments.addAll(lootTable.select());
                     removeEnchantment(limitedItem, removeEnchantments);
                     context.getDescriptor().addLine("Removing enchantment: "+limitedItem.getType().name());
                     calculatedQuantity -= 1;
@@ -84,16 +81,14 @@ public class EnchantmentRemoveAction extends SelectingAction<McmeEntity> {
         } else {
             descriptor.addLine("Enchantments: --none--");
         }
-        if(!enchantmentChoices.isEmpty()) {
+        /*if(!enchantmentChoices.isEmpty()) {
             descriptor.addLine("Enchantment choices: ").indent();
             enchantmentChoices.forEach(choice -> descriptor.add(choice.getDescriptor()));
             descriptor.outdent();
         } else {
             descriptor.addLine("Enchantments choices: --none--");
-        }
+        }*/
         descriptor.outdent();
-        //DebugManager.verbose(Modules.Action.create(EnchantmentRemoveAction.class),"Selector: "+selector.getSelector()+" Filters:"+itemFilters.size()
-        //        + " Enchantments: "+enchantments.size()+ " Choices: "+ enchantmentChoices.size()+" Quantity: "+quantity);
     }
 
     private static void removeEnchantment(ItemStack item, Set<WrappedEnchantment> enchantments) {

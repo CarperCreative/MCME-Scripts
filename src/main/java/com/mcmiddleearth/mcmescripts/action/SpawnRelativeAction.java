@@ -6,10 +6,11 @@ import com.mcmiddleearth.entities.api.VirtualEntityFactory;
 import com.mcmiddleearth.entities.api.VirtualEntityGoalFactory;
 import com.mcmiddleearth.entities.entities.McmeEntity;
 import com.mcmiddleearth.entities.entities.Placeholder;
+import com.mcmiddleearth.mcmescripts.action.targeted.EntityTargetedAction;
 import com.mcmiddleearth.mcmescripts.debug.DebugManager;
 import com.mcmiddleearth.mcmescripts.debug.Modules;
-import com.mcmiddleearth.mcmescripts.selector.McmeEntitySelector;
-import com.mcmiddleearth.mcmescripts.selector.Selector;
+import com.mcmiddleearth.mcmescripts.event.EEntityContainer;
+import com.mcmiddleearth.mcmescripts.event.target.EntityEventTarget;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -17,20 +18,17 @@ import org.bukkit.util.Vector;
 
 import java.util.*;
 
-public class SpawnRelativeAction extends SelectingAction<McmeEntity> {
+public class SpawnRelativeAction extends EntityTargetedAction {
 
     //@SuppressWarnings("All")
-    public SpawnRelativeAction(Selector<McmeEntity> selector, List<VirtualEntityFactory> factories, int lifespan, boolean onGround,
-                               McmeEntitySelector goalTargetSelector, VirtualEntityGoalFactory goalFactory,
+    public SpawnRelativeAction(EntityEventTarget target, List<VirtualEntityFactory> factories, int lifespan, boolean onGround,
+                               EntityEventTarget goalTargets, VirtualEntityGoalFactory goalFactory,
                                Location location, Location[] waypoints, boolean serverSide, int quantity, int xEdge, int spread) {
-        super(selector, (entity,context) -> {
+        super(target, (entity,context) -> {
             DebugManager.verbose(Modules.Action.execute(SpawnRelativeAction.class),"Selected entity: "+entity.getName());
-            McmeEntity tempGoalTarget = null;
-            List<McmeEntity> goalTargets = goalTargetSelector.select(context);
-            if(!goalTargets.isEmpty()) {
-                tempGoalTarget = goalTargets.get(0);
-            }
-            McmeEntity goalTarget = tempGoalTarget;
+
+            McmeEntity goalTarget = goalTargets.getTargets(context).stream().findFirst().orElse(null);
+
             for(int j = 0; j< quantity; j++) {
                 Location finalLocation;
                 if(location!=null) {
@@ -66,7 +64,7 @@ public class SpawnRelativeAction extends SelectingAction<McmeEntity> {
                     factory.withGoalFactory(tempGoalFactory);
                 });
                 context.getDescriptor().outdent();
-                Set<McmeEntity> entities = SpawnAction.spawnEntity(context, factories, lifespan, serverSide);
+                Set<McmeEntity> entities = SpawnAction.spawnEntity(context, factories, lifespan, null,null, EEntityContainer.GLOBAL, serverSide);
                 new HashSet<>(entities).stream().filter(jockey->jockey.getGoal() !=null && jockey.getGoal() instanceof GoalJockey)
                         .forEach(jockey -> {
                             GoalJockey goal = (GoalJockey)jockey.getGoal();
@@ -82,7 +80,6 @@ public class SpawnRelativeAction extends SelectingAction<McmeEntity> {
                         });
             }
         });
-        //DebugManager.info(Modules.Action.create(this.getClass()),"Selector: "+selector.getSelector());
         getDescriptor().indent()
                 .addLine("Lifespan: "+lifespan)
                 .addLine("On ground: "+onGround)
@@ -92,7 +89,7 @@ public class SpawnRelativeAction extends SelectingAction<McmeEntity> {
                 .addLine("Edge length: "+xEdge)
                 .addLine("Spread: "+spread)
                 .addLine("Goal: "+(goalFactory!=null && goalFactory.getGoalType()!=null?goalFactory.getGoalType().name():"--none--"))
-                .addLine("Goal target selector: "+(goalTargetSelector!=null?goalTargetSelector.getSelector():"--none--"));
+                .addLine("Goal target selector: "+(goalTargets != null ? goalTargets.toString() : "--none--"));
         if(waypoints!=null && waypoints.length>0) {
             getDescriptor().addLine("Waypoints: ").indent();
             Arrays.stream(waypoints).forEach(waypoint -> getDescriptor().addLine(""+waypoint));
