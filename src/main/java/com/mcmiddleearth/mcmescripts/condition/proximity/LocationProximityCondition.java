@@ -47,4 +47,7 @@ public class LocationProximityCondition extends CriterionCondition {
                 .addLine("Location: " + location);
     }
 
+    public Location getLocation() {
+        return this.location;
+    }
 }

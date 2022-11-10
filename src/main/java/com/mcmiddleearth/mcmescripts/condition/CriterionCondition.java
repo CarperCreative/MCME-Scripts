@@ -33,4 +33,7 @@ public class CriterionCondition<T> extends Condition {
                 .outdent();
     }
 
+    public Selector<T> getSelector() {
+        return this.selector;
+    }
 }

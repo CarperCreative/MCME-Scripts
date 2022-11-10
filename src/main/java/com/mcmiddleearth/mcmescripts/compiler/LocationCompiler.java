@@ -16,7 +16,7 @@ public class LocationCompiler {
             //DebugManager.info(Modules.Location.create(LocationCompiler.class),"Can't compile location. Missing json element.");
             return Optional.empty();
         }
-        String[] split = element.getAsString().replace(" ","").split(",");
+        String[] split = element.getAsString().split(",");
         if(split.length<4) {
             DebugManager.warn(Modules.Location.create(LocationCompiler.class),"Can't compile location. To few coordinates.");
             return Optional.empty();
