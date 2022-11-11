@@ -120,8 +120,6 @@ public class EntityCompiler {
                     despawnNode.addCondition(condition);
                 }
             }
-
-            conditions.forEach(spawnNode::addCondition);
         } else {
             despawnNode.addCondition(new LocationProximityCondition(factories.get(0).getLocation(),new PlayerSelector("@a[distance=0.."+spawnDistance+"]"),
                 new Criterion("==",0)));
