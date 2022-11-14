@@ -36,6 +36,7 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.potion.PotionEffect;
+import org.bukkit.util.Vector;
 
 import java.util.*;
 
@@ -97,6 +98,8 @@ public class ActionCompiler {
                                 KEY_ENEMIES         = "enemies",
                                 KEY_X_EDGE          = "x_edge",
                                 KEY_SPREAD          = "spread",
+                                KEY_VELOCITY        = "velocity",
+                                KEY_VELOCITY_OVERRIDE = "velocity_override",
 
                                 KEY_TAG_VALUE        = "value",
 
@@ -134,6 +137,7 @@ public class ActionCompiler {
                                 VALUE_BOSS_BAR_ADD          = "boss_bar_add",
                                 VALUE_BOSS_BAR_REMOVE       = "boss_bar_remove",
                                 VALUE_BOSS_BAR_EDIT         = "boss_bar_edit",
+                                VALUE_ENTITY_VELOCITY       = "entity_velocity",
 
                                 VALUE_STAGE_ENABLE          = "enable_stage",
                                 VALUE_STAGE_DISABLE         = "disable_stage",
@@ -650,6 +654,28 @@ public class ActionCompiler {
                     return Optional.empty();
                 }
                 action = new TagDeleteAction(name);
+                break;
+            case VALUE_ENTITY_VELOCITY:
+                mcmeEntitySelector = SelectorCompiler.compileMcmeEntitySelector(jsonObject);
+                String[] stringArr = PrimitiveCompiler.compileString(jsonObject.get(KEY_VELOCITY),"").split(",");
+                boolean isValidVector = stringArr.length == 3;
+                int[] vectorComponents = new int[3];
+                for (int i = 0; i < stringArr.length; i++) {
+                    String s = stringArr[i];
+                    try {
+                        vectorComponents[i] = Integer.parseInt(s);
+                    } catch (NumberFormatException e) {
+                        isValidVector = false;
+                    }
+                }
+                if(!isValidVector) {
+                    DebugManager.warn(Modules.Action.create(ActionCompiler.class),
+                            "Can't compile "+VALUE_ENTITY_VELOCITY+" action. Malformed Velocity.");
+                    return Optional.empty();
+                }
+                Vector velocity = new Vector(vectorComponents[0], vectorComponents[1], vectorComponents[2]);
+                boolean shouldOverride = PrimitiveCompiler.compileBoolean(jsonObject.get(KEY_VELOCITY_OVERRIDE), false);
+                action = new EntityVelocityAction(mcmeEntitySelector,velocity, shouldOverride);
                 break;
             default:
                 DebugManager.severe(Modules.Action.create(ActionCompiler.class),"Can't compile action. Unsupported action type.");
