@@ -12,7 +12,7 @@ import com.mcmiddleearth.mcmescripts.debug.DebugManager;
 import com.mcmiddleearth.mcmescripts.debug.Descriptor;
 import com.mcmiddleearth.mcmescripts.debug.Modules;
 import com.mcmiddleearth.mcmescripts.event.eventTarget.EntityEventTarget;
-import com.mcmiddleearth.mcmescripts.selector.Selector;
+import com.mcmiddleearth.mcmescripts.selector.McmeEntitySelector;
 import com.mcmiddleearth.mcmescripts.trigger.TriggerContext;
 import org.apache.commons.math3.util.FastMath;
 import org.bukkit.Location;
@@ -44,7 +44,7 @@ public class SpawnRandomSelectionAction extends EntityTargetedAction {
 
         private VirtualEntityGoalFactory goalFactory = null;
 
-        private Selector goalTargetSelector = null;
+        private McmeEntitySelector goalTargetSelector = null;
 
         private double probability = 1;
 
@@ -216,7 +216,7 @@ public class SpawnRandomSelectionAction extends EntityTargetedAction {
         }
 
         private void updateGoal(TriggerContext context, Choice selectedChoice) {
-            McmeEntity goalTarget = goalTargetSelector.selectAll(context).stream().findFirst().orElse(null);
+            McmeEntity goalTarget = goalTargetSelector.select(context).stream().findFirst().orElse(null);
             context.getDescriptor().addLine("Goal target: "+(goalTarget!=null?goalTarget.getName():"--none--"));
             if (goalFactory != null) {
                 if (goalTarget != null) {
@@ -260,7 +260,7 @@ public class SpawnRandomSelectionAction extends EntityTargetedAction {
             return this;
         }
 
-        public RandomSpawnData withGoalTargetSelector(Selector goalTargetSelector) {
+        public RandomSpawnData withGoalTargetSelector(McmeEntitySelector goalTargetSelector) {
             this.goalTargetSelector = goalTargetSelector;
             return this;
         }

@@ -8,7 +8,7 @@ import com.mcmiddleearth.mcmescripts.action.Action;
 import com.mcmiddleearth.mcmescripts.condition.Condition;
 import com.mcmiddleearth.mcmescripts.debug.DebugManager;
 import com.mcmiddleearth.mcmescripts.debug.Modules;
-import com.mcmiddleearth.mcmescripts.selector.Selector;
+import com.mcmiddleearth.mcmescripts.selector.McmeEntitySelector;
 import com.mcmiddleearth.mcmescripts.trigger.DecisionTreeTrigger;
 import com.mcmiddleearth.mcmescripts.trigger.ExternalTrigger;
 import com.mcmiddleearth.mcmescripts.trigger.SimpleTrigger;
@@ -192,7 +192,7 @@ public class TriggerCompiler {
                         period = timeJson.getAsInt();
                     } catch(NumberFormatException ignore) {}
                 }
-                Selector mcmeEntitySelector = SelectorCompiler.compileSelector(jsonObject);
+                McmeEntitySelector mcmeEntitySelector = SelectorCompiler.compileMcmeEntitySelector(jsonObject);
                 JsonElement processJson = jsonObject.get(KEY_PROCESS);
                 SelectionTrigger.Process process;
                 if (processJson instanceof JsonPrimitive && processJson.getAsString().equalsIgnoreCase("leave")) {

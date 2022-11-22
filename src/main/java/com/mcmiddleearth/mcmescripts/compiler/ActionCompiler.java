@@ -34,7 +34,8 @@ import com.mcmiddleearth.mcmescripts.event.eventTarget.VirtualEntityEventTarget;
 import com.mcmiddleearth.mcmescripts.event.eventTarget.selector.PlayerSelectorTarget;
 import com.mcmiddleearth.mcmescripts.looting.LootTableChoice;
 import com.mcmiddleearth.mcmescripts.quest.tags.IntegerTag;
-import com.mcmiddleearth.mcmescripts.selector.Selector;
+import com.mcmiddleearth.mcmescripts.selector.McmeEntitySelector;
+import com.mcmiddleearth.mcmescripts.selector.PlayerSelector;
 import com.mcmiddleearth.mcmescripts.trigger.Trigger;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
@@ -645,7 +646,7 @@ public class ActionCompiler {
                         .withProbability(probability).withGroup(group);
                 JsonElement goalTargetJson = jsonObject.get(KEY_GOAL_TARGET);
                 if(goalTargetJson instanceof JsonPrimitive) {
-                    randomSpawnData.withGoalTargetSelector(new Selector(goalTargetJson.getAsString()));
+                    randomSpawnData.withGoalTargetSelector(new McmeEntitySelector(goalTargetJson.getAsString()));
                 }
                 VirtualEntityGoalFactoryCompiler.compile(jsonObject).ifPresent(randomSpawnData::withGoalFactory);
                 int lifespan = PrimitiveCompiler.compileInteger(jsonObject.get(KEY_LIFESPAN),-1);
@@ -678,7 +679,7 @@ public class ActionCompiler {
                     target = TargetCompiler.compilePlayerTarget(jsonObject.getAsJsonObject(KEY_TARGET));
                 }
                 else {
-                    target = new PlayerSelectorTarget(new Selector("@a"));
+                    target = new PlayerSelectorTarget(new PlayerSelector("@a"));
                 }
 
                 String sound = PrimitiveCompiler.compileString(jsonObject.get(KEY_SOUND),null);
@@ -696,7 +697,7 @@ public class ActionCompiler {
                     target = TargetCompiler.compilePlayerTarget(jsonObject.getAsJsonObject(KEY_TARGET));
                 }
                 else {
-                    target = new PlayerSelectorTarget(new Selector("@a"));
+                    target = new PlayerSelectorTarget(new PlayerSelector("@a"));
                 }
 
                 String sound = PrimitiveCompiler.compileString(jsonObject.get(KEY_SOUND),null);

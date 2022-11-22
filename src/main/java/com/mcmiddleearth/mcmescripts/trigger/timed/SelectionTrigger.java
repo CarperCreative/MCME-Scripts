@@ -4,20 +4,20 @@ import com.mcmiddleearth.entities.entities.McmeEntity;
 import com.mcmiddleearth.entities.entities.RealPlayer;
 import com.mcmiddleearth.mcmescripts.action.Action;
 import com.mcmiddleearth.mcmescripts.debug.Descriptor;
-import com.mcmiddleearth.mcmescripts.selector.Selector;
+import com.mcmiddleearth.mcmescripts.selector.McmeEntitySelector;
 import com.mcmiddleearth.mcmescripts.trigger.TriggerContext;
 
 import java.util.*;
 
 public class SelectionTrigger extends PeriodicServerTimeTrigger {
 
-    Selector selector;
+    McmeEntitySelector selector;
 
     Process process;
 
     List<McmeEntity> selectedEntities = new ArrayList<>();
 
-    public SelectionTrigger(Action action, long timeMillis, Selector selector, Process process) {
+    public SelectionTrigger(Action action, long timeMillis, McmeEntitySelector selector, Process process) {
         super(action, timeMillis);
         this.selector = selector;
         this.process = process;
@@ -26,7 +26,7 @@ public class SelectionTrigger extends PeriodicServerTimeTrigger {
     @Override
     public void call(TriggerContext context) {
         if(checkPeriod()) {
-            List<McmeEntity> newSelection = selector.selectAll(context);
+            List<McmeEntity> newSelection = selector.select(context);
             if(process.equals(Process.ENTER)) {
                 newSelection.stream().filter(entity -> !selectedEntities.contains(entity)).forEach(entity -> {
                             TriggerContext cont = new TriggerContext(context).withEntity(entity);

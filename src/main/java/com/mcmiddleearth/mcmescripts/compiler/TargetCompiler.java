@@ -10,7 +10,9 @@ import com.mcmiddleearth.mcmescripts.event.eventTarget.context.VirtualEntityCont
 import com.mcmiddleearth.mcmescripts.event.eventTarget.selector.EntitySelectorTarget;
 import com.mcmiddleearth.mcmescripts.event.eventTarget.selector.PlayerSelectorTarget;
 import com.mcmiddleearth.mcmescripts.event.eventTarget.selector.VirtualEntitySelectorTarget;
-import com.mcmiddleearth.mcmescripts.selector.Selector;
+import com.mcmiddleearth.mcmescripts.selector.McmeEntitySelector;
+import com.mcmiddleearth.mcmescripts.selector.PlayerSelector;
+import com.mcmiddleearth.mcmescripts.selector.VirtualEntitySelector;
 
 public class TargetCompiler {
 
@@ -25,7 +27,7 @@ public class TargetCompiler {
 
         switch (ETargetFrom.valueOf(fromJson.getAsString())){
             case FROM_SELECTOR -> {
-                Selector selector = SelectorCompiler.compileSelector(jsonObject,"selector");
+                PlayerSelector selector = SelectorCompiler.compilePlayerSelector(jsonObject,"selector");
                 return new PlayerSelectorTarget(selector);
             }
             case FROM_CONTEXT -> {
@@ -41,7 +43,7 @@ public class TargetCompiler {
 
         switch (ETargetFrom.valueOf(typeJson.getAsString())){
             case FROM_SELECTOR -> {
-                Selector selector = SelectorCompiler.compileSelector(jsonObject,"selector");
+                McmeEntitySelector selector = SelectorCompiler.compileMcmeEntitySelector(jsonObject,"selector");
                 return new EntitySelectorTarget(selector);
             }
             case FROM_CONTEXT -> {
@@ -57,7 +59,7 @@ public class TargetCompiler {
 
         switch (ETargetFrom.valueOf(typeJson.getAsString())){
             case FROM_SELECTOR -> {
-                Selector selector = SelectorCompiler.compileSelector(jsonObject,"selector");
+                VirtualEntitySelector selector = SelectorCompiler.compileVirtualEntitySelector(jsonObject,"selector");
                 return new VirtualEntitySelectorTarget(selector);
             }
             case FROM_CONTEXT -> {

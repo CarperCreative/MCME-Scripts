@@ -16,7 +16,8 @@ import com.mcmiddleearth.mcmescripts.event.position.CoordinatePosition;
 import com.mcmiddleearth.mcmescripts.event.position.EEventPositionOffsetType;
 import com.mcmiddleearth.mcmescripts.event.eventTarget.selector.EntitySelectorTarget;
 import com.mcmiddleearth.mcmescripts.event.eventTarget.selector.VirtualEntitySelectorTarget;
-import com.mcmiddleearth.mcmescripts.selector.Selector;
+import com.mcmiddleearth.mcmescripts.selector.McmeEntitySelector;
+import com.mcmiddleearth.mcmescripts.selector.VirtualEntitySelector;
 import com.mcmiddleearth.mcmescripts.trigger.DecisionTreeTrigger;
 import com.mcmiddleearth.mcmescripts.trigger.Trigger;
 import com.mcmiddleearth.mcmescripts.trigger.timed.PeriodicServerTimeTrigger;
@@ -91,20 +92,20 @@ public class EntityCompiler {
         spawnActions.add(new TriggerUnregisterAction(spawnTrigger));
         DecisionTreeTrigger.DecisionNode spawnNode = new DecisionTreeTrigger.DecisionNode(spawnActions);
         spawnNode.addCondition(new LocationProximityCondition(
-                new EntitySelectorTarget(new Selector("@a[distance=0.."+spawnDistance+"]")),
+                new EntitySelectorTarget(new McmeEntitySelector("@a[distance=0.."+spawnDistance+"]")),
                 new CoordinatePosition(factories.get(0).getLocation().toVector(),new Vector(0,0,0), EEventPositionOffsetType.ALONG_WORLD_AXIS),
                 new DoubleCriterion(">",0.0)));
         spawnTrigger.setDecisionNode(spawnNode);
 
 
         Set<Action> despawnActions = new HashSet<>();
-        despawnActions.add(new DespawnAction(new VirtualEntitySelectorTarget(new Selector("@e[name="+VirtualEntityFactoryCompiler.getGroupName(factories)+"*]")),false));
+        despawnActions.add(new DespawnAction(new VirtualEntitySelectorTarget(new VirtualEntitySelector("@e[name="+VirtualEntityFactoryCompiler.getGroupName(factories)+"*]")),false));
         triggers.forEach(trigger -> despawnActions.add(new TriggerUnregisterAction(trigger)));
         despawnActions.add(new TriggerRegisterAction(spawnTrigger));
         despawnActions.add(new TriggerUnregisterAction(despawnTrigger));
         DecisionTreeTrigger.DecisionNode despawnNode = new DecisionTreeTrigger.DecisionNode(despawnActions);
         despawnNode.addCondition(new LocationProximityCondition(
-                new EntitySelectorTarget(new Selector("@a[distance=0.."+spawnDistance+"]")),
+                new EntitySelectorTarget(new McmeEntitySelector("@a[distance=0.."+spawnDistance+"]")),
                 new CoordinatePosition(factories.get(0).getLocation().toVector(),new Vector(0,0,0), EEventPositionOffsetType.ALONG_WORLD_AXIS),
                 new DoubleCriterion("==",0.0)));
         despawnTrigger.setDecisionNode(despawnNode);

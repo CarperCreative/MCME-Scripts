@@ -4,9 +4,9 @@ package com.mcmiddleearth.mcmescripts.trigger;
 import com.mcmiddleearth.mcmescripts.debug.DebugManager;
 import com.mcmiddleearth.mcmescripts.debug.Descriptor;
 import com.mcmiddleearth.mcmescripts.debug.Modules;
-import com.mcmiddleearth.mcmescripts.selector.Selector;
+import com.mcmiddleearth.mcmescripts.selector.McmeEntitySelector;
+import com.mcmiddleearth.mcmescripts.selector.PlayerSelector;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.World;
 
 import java.util.logging.Logger;
@@ -19,8 +19,8 @@ public abstract class Trigger {
 
     private boolean callOnce = false;
 
-    private Selector entity;
-    private Selector player;
+    private McmeEntitySelector entity;
+    private PlayerSelector player;
 
     private World world;
 
@@ -43,19 +43,19 @@ public abstract class Trigger {
         return triggerContainer;
     }
 
-    public Selector getEntity() {
+    public McmeEntitySelector getEntity() {
         return entity;
     }
 
-    public void setEntity(Selector entity) {
+    public void setEntity(McmeEntitySelector entity) {
         this.entity = entity;
     }
 
-    public Selector getPlayer() {
+    public PlayerSelector getPlayer() {
         return player;
     }
 
-    public void setPlayer(Selector player) {
+    public void setPlayer(PlayerSelector player) {
         this.player = player;
     }
 

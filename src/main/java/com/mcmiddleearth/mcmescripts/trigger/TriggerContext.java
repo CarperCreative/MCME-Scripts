@@ -51,8 +51,8 @@ public class TriggerContext {
             party = ((Stage) trigger.getTriggerContainer()).getQuest().getParty();
         }
         this.world = trigger.getWorld();
-        this.player = (trigger.getPlayer()!=null?trigger.getPlayer().selectOnlyPlayers(this).stream().findFirst().orElse(null):null);
-        this.entity = (trigger.getEntity()!=null?trigger.getEntity().selectOnlyVirtualEntities(this).stream().findFirst().orElse(null):null);
+        this.player = (trigger.getPlayer()!=null?trigger.getPlayer().select(this).stream().findFirst().orElse(null):null);
+        this.entity = (trigger.getEntity()!=null?trigger.getEntity().select(this).stream().findFirst().orElse(null):null);
         descriptor = new Descriptor("Event Log:").indent()
                 .addLine(trigger.getTriggerContainer().getName()+"."+trigger.getName())
                 .addLine("Event player: "+(player!=null?player.getName():"--none--"))

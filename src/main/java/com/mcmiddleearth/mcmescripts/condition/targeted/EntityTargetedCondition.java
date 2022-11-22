@@ -3,7 +3,7 @@ package com.mcmiddleearth.mcmescripts.condition.targeted;
 import com.mcmiddleearth.entities.entities.McmeEntity;
 import com.mcmiddleearth.mcmescripts.condition.Condition;
 import com.mcmiddleearth.mcmescripts.debug.Descriptor;
-import com.mcmiddleearth.mcmescripts.selector.Selector;
+import com.mcmiddleearth.mcmescripts.selector.McmeEntitySelector;
 import com.mcmiddleearth.mcmescripts.trigger.TriggerContext;
 
 import java.util.function.Function;
@@ -12,11 +12,11 @@ public class EntityTargetedCondition extends Condition {
 
     private boolean matchAllSelected = false;
 
-    private final Selector selector;
+    private final McmeEntitySelector selector;
 
     private final Function<McmeEntity,Boolean> test;
 
-    public EntityTargetedCondition(Selector selector, Function<McmeEntity, Boolean> test) {
+    public EntityTargetedCondition(McmeEntitySelector selector, Function<McmeEntity, Boolean> test) {
         this.test = test;
         this.selector = selector;
     }
@@ -25,7 +25,7 @@ public class EntityTargetedCondition extends Condition {
     public boolean test(TriggerContext context) {
         boolean result = matchAllSelected;
         context.getDescriptor().add(super.getDescriptor()).indent();
-        for(McmeEntity element : selector.selectAll(context)) {
+        for(McmeEntity element : selector.select(context)) {
             context.getDescriptor().addLine("Testing McmeEntity: "+(element.getName()));
 
             if(matchAllSelected && !test.apply(element)) {

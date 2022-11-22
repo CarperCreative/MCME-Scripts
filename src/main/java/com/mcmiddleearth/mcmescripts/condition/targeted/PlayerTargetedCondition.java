@@ -2,7 +2,7 @@ package com.mcmiddleearth.mcmescripts.condition.targeted;
 
 import com.mcmiddleearth.mcmescripts.condition.Condition;
 import com.mcmiddleearth.mcmescripts.debug.Descriptor;
-import com.mcmiddleearth.mcmescripts.selector.Selector;
+import com.mcmiddleearth.mcmescripts.selector.PlayerSelector;
 import com.mcmiddleearth.mcmescripts.trigger.TriggerContext;
 import org.bukkit.entity.Player;
 
@@ -12,11 +12,11 @@ public class PlayerTargetedCondition extends Condition {
 
     private boolean matchAllSelected = false;
 
-    private final Selector selector;
+    private final PlayerSelector selector;
 
     private final Function<Player,Boolean> test;
 
-    public PlayerTargetedCondition(Selector selector, Function<Player, Boolean> test) {
+    public PlayerTargetedCondition(PlayerSelector selector, Function<Player, Boolean> test) {
         this.test = test;
         this.selector = selector;
     }
@@ -25,7 +25,7 @@ public class PlayerTargetedCondition extends Condition {
     public boolean test(TriggerContext context) {
         boolean result = matchAllSelected;
         context.getDescriptor().add(super.getDescriptor()).indent();
-        for(Player element : selector.selectOnlyPlayers(context)) {
+        for(Player element : selector.select(context)) {
             context.getDescriptor().addLine("Testing player: "+element.getName());
             if(matchAllSelected && !test.apply(element)) {
                 result = false;
