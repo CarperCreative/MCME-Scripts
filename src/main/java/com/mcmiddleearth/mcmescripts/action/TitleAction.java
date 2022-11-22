@@ -12,7 +12,17 @@ public class TitleAction extends PlayerTargetedAction {
     public TitleAction(PlayerEventTarget target, String title, String subtitle, int fadeIn, int stay, int fadeOut) {
         super(target, (player, context) -> {
             DebugManager.verbose(Modules.Action.execute(TitleAction.class),"Title for player: "+player.getName() + " " + title);
-            player.sendTitle(title,subtitle,fadeIn,stay,fadeOut);
+            String finalTitle = title;
+            String finalSubtitle = subtitle;
+            if(context.getMessage()!=null) {
+                finalTitle = title.replace("*message*", context.getMessage());
+                finalSubtitle = subtitle.replace("*message*", context.getMessage());
+            }
+            if(context.getName()!=null) {
+                finalTitle = title.replace("*name*", context.getName());
+                finalSubtitle = subtitle.replace("*name*", context.getName());
+            }
+            player.sendTitle(finalTitle,finalSubtitle,fadeIn,stay,fadeOut);
         });
         Logger.getGlobal().info("Displaying Title: " + title + ", " + subtitle + " to " + target.toString());
         getDescriptor().indent()

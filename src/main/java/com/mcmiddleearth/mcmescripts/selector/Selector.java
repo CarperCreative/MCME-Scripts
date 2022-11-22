@@ -19,8 +19,10 @@ import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class Selector {
@@ -44,6 +46,7 @@ public class Selector {
     protected GoalType goalType;
     protected boolean excludeGoalType;
     protected String talking;
+    protected Set<String> tags = new HashSet<>();
 
     public Selector(String selector) throws IndexOutOfBoundsException {
         this.selector = selector;
@@ -169,6 +172,9 @@ public class Selector {
                     case "talking":
                         talking = split[1];
                         break;
+                    case "tag":
+                        tags.add(split[1]);
+                        break;
                 }
             }
         }
@@ -230,7 +236,6 @@ public class Selector {
             case TRIGGER_SELF -> {
                 if (context.getPlayer() != null)
                     players.add(context.getPlayer());
-                return players;
             }
             case NEAREST_PLAYER, ALL_PLAYERS, ALL_ENTITIES, RANDOM_PLAYER -> {
                 //if party is set in context, select players from that party only
@@ -239,83 +244,89 @@ public class Selector {
                 } else {
                     players.addAll(Bukkit.getOnlinePlayers());
                 }
-                eventPos = new Vector(getAbsolute(eventPos.getX(), xRelative, x),
-                        getAbsolute(eventPos.getY(), yRelative, y),
-                        getAbsolute(eventPos.getZ(), zRelative, z));
-                if (hasAreaLimit()) {
-                    World world = context.getWorld();
-                    double xMin = (dx < 0 ? Integer.MIN_VALUE : eventPos.getX() - dx);
-                    double xMax = (dx < 0 ? Integer.MAX_VALUE : eventPos.getX() + dx);
-                    double yMin = (dy < 0 ? Integer.MIN_VALUE : eventPos.getY() - dy);
-                    double yMax = (dy < 0 ? Integer.MAX_VALUE : eventPos.getY() + dy);
-                    double zMin = (dz < 0 ? Integer.MIN_VALUE : eventPos.getZ() - dz);
-                    double zMax = (dz < 0 ? Integer.MAX_VALUE : eventPos.getZ() + dz);
-                    players = players.stream().filter(player -> player.getLocation().getWorld().equals(world)
-                                    && xMin <= player.getLocation().getX()
-                                    && player.getLocation().getX() < xMax
-                                    && yMin <= player.getLocation().getY()
-                                    && player.getLocation().getY() < yMax
-                                    && zMin <= player.getLocation().getZ()
-                                    && player.getLocation().getZ() < zMax)
-                            .collect(Collectors.toList());
-                }
-                if (name != null) {
-                    if (name.endsWith("*")) {
-                        players = players.stream().filter(player -> player.getName()
-                                        .startsWith(name.substring(0, name.length() - 1)) != excludeName)
-                                .collect(Collectors.toList());
-                    } else {
-                        players = players.stream().filter(player -> player.getName().equals(name) != excludeName)
-                                .collect(Collectors.toList());
-                    }
-                }
-                if (gameMode != null) {
-                    players = players.stream().filter(player -> player.getGameMode().equals(gameMode) != excludeGameMode)
-                            .collect(Collectors.toList());
-                }
-                if (minPitch > -90 || maxPitch < 90) {
-                    players = players.stream().filter(player -> minPitch <= player.getLocation().getPitch()
-                                    && player.getLocation().getPitch() < maxPitch)
-                            .collect(Collectors.toList());
-                }
-                if (minYaw > -180 || maxYaw < 180) {
-                    players = players.stream().filter(player -> minYaw <= player.getLocation().getPitch()
-                            && player.getLocation().getPitch() < maxYaw).collect(Collectors.toList());
-                }
-                List<EntitySelectorElement<Player>> sort = players.stream().map(EntitySelectorElement<Player>::new)
-                        .collect(Collectors.toList());
-                if (minDistanceSquared > 0 || maxDistanceSquared < Double.MAX_VALUE) {
-                    Location finalLoc = new Location(context.getWorld(),eventPos.getX(),eventPos.getY(),eventPos.getZ());
-                    sort = sort.stream()
-                            .filter(element -> {
-                                if (finalLoc.getWorld() == null
-                                        || !finalLoc.getWorld().equals(element.getContent().getWorld())) return false;
-                                element.setValue(element.getContent().getLocation().distanceSquared(finalLoc));
-                                return minDistanceSquared <= element.getValue()
-                                        && element.getValue() <= maxDistanceSquared;
-                            }).collect(Collectors.toList());
-                }
-                List<Player> result = switch (selectorType) {
-                    case NEAREST_PLAYER ->
-                            sort.stream().sorted((one, two) -> (Double.compare(two.getValue(), one.getValue()))).limit(1)
-                                    .map(EntitySelectorElement::getContent).collect(Collectors.toList());
-                    case RANDOM_PLAYER ->
-                            Collections.singletonList(sort.get(new Random().nextInt(sort.size())).getContent());
-                    case ALL_PLAYERS, ALL_ENTITIES ->
-                            sort.stream().sorted((one, two) -> (Double.compare(two.getValue(), one.getValue()))).limit(limit)
-                                    .map(EntitySelectorElement::getContent).collect(Collectors.toList());
-                    default -> Collections.emptyList();
-                };
-                DebugManager.verbose(Modules.Selector.select(this.getClass()),
-                        "Selector!: " + getSelector()
-                                + " Selected: " + (result.size() > 0 ? result.get(0).getName() : null) + " and total of " + result.size());
-                return result;
+            }
+            default -> {
+                DebugManager.warn(Modules.Selector.select(this.getClass()),
+                        "Selector: " + getSelector()
+                                + " Invalid player selector type!");
+                return Collections.emptyList();
             }
         }
-        DebugManager.warn(Modules.Selector.select(this.getClass()),
-                "Selector: "+getSelector()
-                        +" Invalid player selector type!");
-        return Collections.emptyList();
+        eventPos = new Vector(getAbsolute(eventPos.getX(), xRelative, x),
+                getAbsolute(eventPos.getY(), yRelative, y),
+                getAbsolute(eventPos.getZ(), zRelative, z));
+        if (hasAreaLimit()) {
+            World world = context.getWorld();
+            double xMin = (dx < 0 ? Integer.MIN_VALUE : eventPos.getX() - dx);
+            double xMax = (dx < 0 ? Integer.MAX_VALUE : eventPos.getX() + dx);
+            double yMin = (dy < 0 ? Integer.MIN_VALUE : eventPos.getY() - dy);
+            double yMax = (dy < 0 ? Integer.MAX_VALUE : eventPos.getY() + dy);
+            double zMin = (dz < 0 ? Integer.MIN_VALUE : eventPos.getZ() - dz);
+            double zMax = (dz < 0 ? Integer.MAX_VALUE : eventPos.getZ() + dz);
+            players = players.stream().filter(player -> player.getLocation().getWorld().equals(world)
+                            && xMin <= player.getLocation().getX()
+                            && player.getLocation().getX() < xMax
+                            && yMin <= player.getLocation().getY()
+                            && player.getLocation().getY() < yMax
+                            && zMin <= player.getLocation().getZ()
+                            && player.getLocation().getZ() < zMax)
+                    .collect(Collectors.toList());
+        }
+        if (name != null) {
+            if (name.endsWith("*")) {
+                players = players.stream().filter(player -> player.getName()
+                                .startsWith(name.substring(0, name.length() - 1)) != excludeName)
+                        .collect(Collectors.toList());
+            } else {
+                players = players.stream().filter(player -> player.getName().equals(name) != excludeName)
+                        .collect(Collectors.toList());
+            }
+        }
+        if (gameMode != null) {
+            players = players.stream().filter(player -> player.getGameMode().equals(gameMode) != excludeGameMode)
+                    .collect(Collectors.toList());
+        }
+        if (minPitch > -90 || maxPitch < 90) {
+            players = players.stream().filter(player -> minPitch <= player.getLocation().getPitch()
+                            && player.getLocation().getPitch() < maxPitch)
+                    .collect(Collectors.toList());
+        }
+        if (minYaw > -180 || maxYaw < 180) {
+            players = players.stream().filter(player -> minYaw <= player.getLocation().getPitch()
+                    && player.getLocation().getPitch() < maxYaw).collect(Collectors.toList());
+        }
+        for(String tag: tags) {
+            players = players.stream().filter(player -> EntitiesPlugin.getEntityServer().getOrCreateMcmePlayer(player).hasTag(tag))
+                    .collect(Collectors.toList());
+        }
+        List<EntitySelectorElement<Player>> sort = players.stream().map(EntitySelectorElement<Player>::new)
+                .collect(Collectors.toList());
+        if (minDistanceSquared > 0 || maxDistanceSquared < Double.MAX_VALUE) {
+            Location finalLoc = new Location(context.getWorld(),eventPos.getX(),eventPos.getY(),eventPos.getZ());
+            sort = sort.stream()
+                    .filter(element -> {
+                        if (finalLoc.getWorld() == null
+                                || !finalLoc.getWorld().equals(element.getContent().getWorld())) return false;
+                        element.setValue(element.getContent().getLocation().distanceSquared(finalLoc));
+                        return minDistanceSquared <= element.getValue()
+                                && element.getValue() <= maxDistanceSquared;
+                    }).collect(Collectors.toList());
+        }
+        List<Player> result = switch (selectorType) {
+            case NEAREST_PLAYER ->
+                    sort.stream().sorted((one, two) -> (Double.compare(two.getValue(), one.getValue()))).limit(1)
+                            .map(EntitySelectorElement::getContent).collect(Collectors.toList());
+            case RANDOM_PLAYER ->
+                    Collections.singletonList(sort.get(new Random().nextInt(sort.size())).getContent());
+            case ALL_PLAYERS, ALL_ENTITIES, TRIGGER_SELF ->
+                    sort.stream().sorted((one, two) -> (Double.compare(two.getValue(), one.getValue()))).limit(limit)
+                            .map(EntitySelectorElement::getContent).collect(Collectors.toList());
+            default -> Collections.emptyList();
+        };
+        //DebugManager.verbose(Modules.Selector.select(this.getClass()),
+        //        "Selector: " + getSelector()
+        //                + " Selected: " + (result.size() > 0 ? result.get(0).getName() : null) + " and total of " + result.size());
+        return result;
     }
 
     public List<VirtualEntity> selectOnlyVirtualEntities(TriggerContext context) {
@@ -358,6 +369,8 @@ public class Selector {
         entities = entities.stream().filter(entity -> !(entity instanceof SpeechBalloonEntity)
                                                     && (entityType == null || entity.getType().equals(entityType) != excludeType))
                 .collect(Collectors.toList());
+
+        //filtering
         if(name!=null) {
             if(name.endsWith("*")) {
                 entities = entities.stream().filter(entity -> {
@@ -390,6 +403,12 @@ public class Selector {
             entities = entities.stream().filter(entity -> entity.isTalking() == talking.equals("true"))
                     .collect(Collectors.toList());
         }
+        for(String tag: tags) {
+            entities = entities.stream().filter(entity -> entity.hasTag(tag))
+                    .collect(Collectors.toList());
+        }
+
+        //sorting
         List<EntitySelectorElement<VirtualEntity>> sort = entities.stream().map(EntitySelectorElement<VirtualEntity>::new)
                 .collect(Collectors.toList());
         if(minDistanceSquared > 0 || maxDistanceSquared < Double.MAX_VALUE) {

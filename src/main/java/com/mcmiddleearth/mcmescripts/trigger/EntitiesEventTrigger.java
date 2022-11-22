@@ -1,14 +1,19 @@
 package com.mcmiddleearth.mcmescripts.trigger;
 
 import com.mcmiddleearth.entities.EntitiesPlugin;
+import com.mcmiddleearth.entities.entities.McmeEntity;
 import com.mcmiddleearth.entities.events.listener.McmeEventListener;
 import com.mcmiddleearth.mcmescripts.MCMEScripts;
 import com.mcmiddleearth.mcmescripts.action.Action;
+import com.mcmiddleearth.mcmescripts.debug.Descriptor;
 
 public abstract class EntitiesEventTrigger extends EventTrigger implements McmeEventListener {
 
-    public EntitiesEventTrigger(Action action) {
+    private final boolean useAllEntities;
+
+    public EntitiesEventTrigger(Action action, boolean useAllEntities) {
         super(action);
+        this.useAllEntities = useAllEntities;
     }
 
     @Override
@@ -21,5 +26,19 @@ public abstract class EntitiesEventTrigger extends EventTrigger implements McmeE
     public void unregister() {
         super.unregister();
         EntitiesPlugin.getEntityServer().unregisterEvents(MCMEScripts.getInstance(),this);
+    }
+
+    protected boolean isScriptEntity(McmeEntity entity) {
+        if(useAllEntities) return true;
+        if(entity == null) return false;
+        for(McmeEntity search: getTriggerContainer().getEntityContainer().getEntities()) {
+            if(search.equals(entity)) return true;
+        }
+        return false;
+    }
+
+    @Override
+    public Descriptor getDescriptor() {
+        return super.getDescriptor().addLine("Use all entities: "+useAllEntities);
     }
 }

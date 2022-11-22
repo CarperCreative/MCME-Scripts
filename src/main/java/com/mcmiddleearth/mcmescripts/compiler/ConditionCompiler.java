@@ -17,6 +17,7 @@ import com.mcmiddleearth.mcmescripts.event.eventTarget.VirtualEntityEventTarget;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 
+import javax.swing.text.html.Option;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -47,6 +48,8 @@ public class ConditionCompiler {
                                 KEY_TARGET              = "target",
                                 KEY_PLAYER_TARGET       = "player_target",
                                 KEY_ENTITY_TARGET       = "entity_target",
+                                KEY_MESSAGE             = "message",
+
                                 VALUE_TALK                  = "talk",
                                 VALUE_NO_TALK               = "no_talk",
                                 VALUE_GOAL_TYPE             = "goal_type",
@@ -57,7 +60,8 @@ public class ConditionCompiler {
                                 VALUE_PLAYER_ONLINE         = "player_online",
                                 VALUE_SERVER_DAYTIME        = "server_daytime",
                                 VALUE_HAS_TAG_VALUE         = "tag_value",
-                                VALUE_SCOREBOARD_VALUE      = "scoreboard_value";
+                                VALUE_SCOREBOARD_VALUE      = "scoreboard_value",
+                                VALUE_MESSAGE               = "message";
 
     public static Set<Condition> compile(JsonObject jsonData) {
         JsonElement conditions = jsonData.get(KEY_CONDITION);
@@ -190,6 +194,11 @@ public class ConditionCompiler {
                     String playerName = PrimitiveCompiler.compileString(jsonObject.get(KEY_SCOREBOARD_PLAYER),null);
                     String objectiveName = PrimitiveCompiler.compileString(jsonObject.get(KEY_SCOREBOARD_OBJECTIVE),null);
                     return Optional.of(new ScoreboardValueCondition(playerName,objectiveName, compileCriterion(jsonObject)));
+                }
+                case VALUE_MESSAGE -> {
+                    boolean negate = PrimitiveCompiler.compileBoolean(jsonObject.get(KEY_EXCLUDE), false);
+                    String message = PrimitiveCompiler.compileString(jsonObject.get(KEY_MESSAGE), "*");
+                    return Optional.of(new MessageCondition(message, negate));
                 }
             }
         } catch(NullPointerException ignore) {}
