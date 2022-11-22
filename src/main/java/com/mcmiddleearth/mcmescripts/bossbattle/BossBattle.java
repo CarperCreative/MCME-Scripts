@@ -171,6 +171,11 @@ public class BossBattle implements ITriggerContainer, IEntityContainer, ITagCont
         entities.remove(entity);
     }
 
+    @Override
+    public Set<McmeEntity> getEntities() {
+        return entities;
+    }
+
     public void unregisterAllTriggers(){
         for(String timelineName : timelines.keySet()){
             timelines.get(timelineName).getSlots().forEach(TimelineSlot::deactivateTriggers);
