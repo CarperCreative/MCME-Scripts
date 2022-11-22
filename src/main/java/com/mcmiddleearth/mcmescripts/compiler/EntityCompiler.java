@@ -8,10 +8,13 @@ import com.mcmiddleearth.mcmescripts.ConfigKeys;
 import com.mcmiddleearth.mcmescripts.MCMEScripts;
 import com.mcmiddleearth.mcmescripts.action.*;
 import com.mcmiddleearth.mcmescripts.condition.Criterion;
+import com.mcmiddleearth.mcmescripts.condition.DoubleCriterion;
 import com.mcmiddleearth.mcmescripts.condition.proximity.LocationProximityCondition;
 import com.mcmiddleearth.mcmescripts.debug.DebugManager;
 import com.mcmiddleearth.mcmescripts.debug.Modules;
 import com.mcmiddleearth.mcmescripts.event.EEntityContainer;
+import com.mcmiddleearth.mcmescripts.event.position.CoordinatePosition;
+import com.mcmiddleearth.mcmescripts.event.position.EEventPositionOffsetType;
 import com.mcmiddleearth.mcmescripts.event.target.selector.EntitySelectorTarget;
 import com.mcmiddleearth.mcmescripts.event.target.selector.PlayerSelectorTarget;
 import com.mcmiddleearth.mcmescripts.event.target.selector.VirtualEntitySelectorTarget;
@@ -19,6 +22,7 @@ import com.mcmiddleearth.mcmescripts.selector.Selector;
 import com.mcmiddleearth.mcmescripts.trigger.DecisionTreeTrigger;
 import com.mcmiddleearth.mcmescripts.trigger.Trigger;
 import com.mcmiddleearth.mcmescripts.trigger.timed.PeriodicServerTimeTrigger;
+import org.bukkit.util.Vector;
 
 import java.util.HashSet;
 import java.util.List;
@@ -90,8 +94,8 @@ public class EntityCompiler {
         DecisionTreeTrigger.DecisionNode spawnNode = new DecisionTreeTrigger.DecisionNode(spawnActions);
         spawnNode.addCondition(new LocationProximityCondition(
                 new EntitySelectorTarget(new Selector("@a[distance=0.."+spawnDistance+"]")),
-                factories.get(0).getLocation(),
-                new Criterion(">",0)));
+                new CoordinatePosition(factories.get(0).getLocation().toVector(),new Vector(0,0,0), EEventPositionOffsetType.ALONG_WORLD_AXIS),
+                new DoubleCriterion(">",0.0)));
         spawnTrigger.setDecisionNode(spawnNode);
 
 
@@ -103,8 +107,8 @@ public class EntityCompiler {
         DecisionTreeTrigger.DecisionNode despawnNode = new DecisionTreeTrigger.DecisionNode(despawnActions);
         despawnNode.addCondition(new LocationProximityCondition(
                 new EntitySelectorTarget(new Selector("@a[distance=0.."+spawnDistance+"]")),
-                factories.get(0).getLocation(),
-                new Criterion("==",0)));
+                new CoordinatePosition(factories.get(0).getLocation().toVector(),new Vector(0,0,0), EEventPositionOffsetType.ALONG_WORLD_AXIS),
+                new DoubleCriterion("==",0.0)));
         despawnTrigger.setDecisionNode(despawnNode);
 
         return Optional.of(spawnTrigger);
