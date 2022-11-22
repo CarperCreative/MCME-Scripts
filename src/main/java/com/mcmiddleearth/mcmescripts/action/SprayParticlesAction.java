@@ -67,7 +67,7 @@ public class SprayParticlesAction extends Action {
                             location.setPitch(rotation.getPitch()+spreadPitch);
                             location.setYaw(rotation.getYaw()+spreadYaw);
                             Vector direction = location.getDirection();
-                            location.getWorld().spawnParticle(particle,location,0,direction.getX(), direction.getY(), direction.getZ(),speed);
+                            location.getWorld().spawnParticle(particle,location,0,direction.getX(), direction.getY(), direction.getZ(),speed,null,true);
                         }
                     }
 

@@ -45,7 +45,7 @@ public class ParticlesAction extends Action {
                     if(position != null){
                         Location location = new Location(context.getWorld(),position.getX(),position.getY(),position.getZ());
 
-                        context.getWorld().spawnParticle(particle,location,amount,spread.getX(), spread.getY(), spread.getZ(),speed);
+                        context.getWorld().spawnParticle(particle,location,amount,spread.getX(), spread.getY(), spread.getZ(),speed,null,true);
                     }
 
                     if(counter > duration){

@@ -140,6 +140,11 @@ public class ActionCompiler {
                                 KEY_GOAL_CONTROLLED = "goal_controlled",
                                 KEY_TURNING_SPEED   = "turning_speed",
                                 KEY_TICKS           = "ticks",
+                                KEY_MAGNITUDE       = "magnitude",
+                                KEY_OVERRIDE_VELOCITY = "override_velocity",
+                                KEY_MAX_HEALTH      = "max_health",
+                                KEY_DIRECTION       = "direction",
+                                KEY_DAMAGE       = "damage",
 
                                 KEY_TIMELINE_CONFIGURATION         = "timeline_configuration",
                                 KEY_TIMELINE_CONFIGURATION_CHOICES = "timeline_configuration_choices",
@@ -202,7 +207,11 @@ public class ActionCompiler {
                                 VALUE_RESTART_TIMELINE      = "restart_timeline",
                                 VALUE_SPRAY_PARTICLES       = "spray_particles",
                                 VALUE_PARTICLES             = "particles",
-                                VALUE_SET_ON_FIRE           = "set_on_fire";
+                                VALUE_SET_ON_FIRE           = "set_on_fire",
+                                VALUE_APPLY_VELOCITY        = "apply_velocity",
+                                VALUE_SET_BOSS_BAR_VALUE_FROM_HEALTH = "set_boss_bar_value_from_health",
+                                VALUE_SET_FIRE_TO_PLAYER_NEAR_POSITION = "set_fire_to_player_near_position",
+                                VALUE_DAMAGE_PLAYER_NEAR_POSITION = "damage_player_near_position";
 
 
     public static Collection<Action> compile(JsonObject jsonData) {
@@ -898,6 +907,43 @@ public class ActionCompiler {
                 int ticks = PrimitiveCompiler.compileInteger(jsonObject.get(KEY_TICKS),20);
 
                 action = new SetOnFireAction(target,ticks);
+            }
+            case VALUE_APPLY_VELOCITY -> {
+                EntityEventTarget target = TargetCompiler.compileEntityTarget(jsonObject.getAsJsonObject(KEY_TARGET));
+                EventRotation direction = RotationCompiler.compile(jsonObject.getAsJsonObject(KEY_DIRECTION));
+                double magnitude = PrimitiveCompiler.compileDouble(jsonObject.get(KEY_MAGNITUDE),1);
+                boolean overrideVelocity = PrimitiveCompiler.compileBoolean(jsonObject.get(KEY_OVERRIDE_VELOCITY),false);
+
+                action = new ApplyVelocityAction(target,direction,magnitude,overrideVelocity);
+            }
+            case VALUE_SET_BOSS_BAR_VALUE_FROM_HEALTH -> {
+                VirtualEntityEventTarget target = TargetCompiler.compileVirtualEntityTarget(jsonObject.getAsJsonObject(KEY_TARGET));
+
+                String name = PrimitiveCompiler.compileString(jsonObject.get(KEY_NAME),null);
+                NamespacedKey barKey = new NamespacedKey(MCMEScripts.getInstance(),name);
+                double maxHealth = PrimitiveCompiler.compileDouble(jsonObject.get(KEY_MAX_HEALTH),100);
+
+                action = new SetBossBarValueFromHealthAction(target,barKey,maxHealth);
+            }
+            case VALUE_SET_FIRE_TO_PLAYER_NEAR_POSITION -> {
+                PlayerEventTarget target = TargetCompiler.compilePlayerTarget(jsonObject.getAsJsonObject(KEY_TARGET));
+
+                EventPosition position = PositionCompiler.compile(jsonObject.getAsJsonObject(KEY_POSITION));
+
+                int fireTicks = PrimitiveCompiler.compileInteger(jsonObject.get(KEY_TICKS),100);
+                double radius = PrimitiveCompiler.compileDouble(jsonObject.get(KEY_RADIUS),100);
+
+                action = new SetFireToPlayerNearPositionAction(target,position,radius,fireTicks);
+            }
+            case VALUE_DAMAGE_PLAYER_NEAR_POSITION -> {
+                PlayerEventTarget target = TargetCompiler.compilePlayerTarget(jsonObject.getAsJsonObject(KEY_TARGET));
+
+                EventPosition position = PositionCompiler.compile(jsonObject.getAsJsonObject(KEY_POSITION));
+
+                double damage = PrimitiveCompiler.compileDouble(jsonObject.get(KEY_DAMAGE),100);
+                double radius = PrimitiveCompiler.compileDouble(jsonObject.get(KEY_RADIUS),100);
+
+                action = new DamagePlayerNearPositionAction(target,position,radius,damage);
             }
             default -> {
                 DebugManager.severe(Modules.Action.create(ActionCompiler.class),"Can't compile action. Unsupported action type.");

@@ -46,6 +46,7 @@ public class TriggerCompiler {
                                 KEY_CENTER          = "center",
                                 KEY_MET_ALL_CONDITIONS  = "met_all_conditions",
                                 KEY_NAME                = "name",
+                                KEY_ITEM_NAME           = "item_name",
                                 KEY_CURRENT_ANIMATION   = "current_animation",
                                 KEY_NEXT_ANIMATION      = "next_animation",
                                 KEY_PROCESS             = "process",
@@ -143,7 +144,7 @@ public class TriggerCompiler {
                 trigger = new PlayerTalkTrigger(null,command);
                 break;
             case VALUE_USE_ITEM_TRIGGER:
-                String name = PrimitiveCompiler.compileString(jsonObject.get(KEY_NAME),"");
+                String name = PrimitiveCompiler.compileString(jsonObject.get(KEY_ITEM_NAME),"");
                 trigger = new UseItemTrigger(null,name);
                 break;
             case VALUE_PLAYER_JOIN_TRIGGER:

@@ -7,5 +7,4 @@ public class OnlinePlayerCondition extends CriterionCondition {
     public OnlinePlayerCondition(PlayerEventTarget target, Criterion test) {
         super(target, test);
     }
-
 }

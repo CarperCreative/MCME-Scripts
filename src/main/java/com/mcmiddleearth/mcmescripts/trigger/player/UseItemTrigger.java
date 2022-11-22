@@ -7,9 +7,12 @@ import com.mcmiddleearth.mcmescripts.debug.Modules;
 import com.mcmiddleearth.mcmescripts.trigger.BukkitEventTrigger;
 import com.mcmiddleearth.mcmescripts.trigger.TriggerContext;
 import io.papermc.paper.event.player.AsyncChatEvent;
+import lombok.extern.java.Log;
 import net.kyori.adventure.text.Component;
+import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.player.*;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.logging.Logger;
@@ -27,14 +30,19 @@ public class UseItemTrigger extends BukkitEventTrigger {
                 "Action: " + (action!=null?action.getClass().getSimpleName():null));
     }
 
-    @EventHandler
-    public void onPlayerUse(PlayerInteractEvent event) {
-
-        if(event.getItem() != null){
-            if(event.getItem().displayName().examinableName().equals(itemName)){
+    @EventHandler(priority= EventPriority.HIGH, ignoreCancelled = false)
+    public void pressF(PlayerSwapHandItemsEvent event) {
+        Logger.getGlobal().warning(event.getMainHandItem().displayName().toString());
+        Logger.getGlobal().warning(itemName);
+        Logger.getGlobal().warning("-----------------------");
+        if(event.getOffHandItem() != null){
+            if(event.getOffHandItem().displayName().toString().contains(itemName.toLowerCase())){
                 TriggerContext context = new TriggerContext(this)
                         .withPlayer(event.getPlayer())
                         .withContext("UseItemTrigger.PlayerWhoUsedItem",event.getPlayer());
+
+                event.setMainHandItem(event.getOffHandItem());
+                event.setOffHandItem(event.getMainHandItem());
 
                 if(event.isAsynchronous()) {
                     new BukkitRunnable() {

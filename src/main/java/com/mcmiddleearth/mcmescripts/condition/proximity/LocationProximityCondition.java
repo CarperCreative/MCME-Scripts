@@ -1,34 +1,35 @@
 package com.mcmiddleearth.mcmescripts.condition.proximity;
 
-import com.mcmiddleearth.mcmescripts.condition.Criterion;
-import com.mcmiddleearth.mcmescripts.condition.CriterionCondition;
-import com.mcmiddleearth.mcmescripts.condition.targeted.EntityTargetedCondition;
-import com.mcmiddleearth.mcmescripts.debug.DebugManager;
-import com.mcmiddleearth.mcmescripts.debug.Descriptor;
-import com.mcmiddleearth.mcmescripts.debug.Modules;
+import com.mcmiddleearth.entities.entities.McmeEntity;
+import com.mcmiddleearth.mcmescripts.condition.Condition;
+import com.mcmiddleearth.mcmescripts.condition.DoubleCriterion;
+import com.mcmiddleearth.mcmescripts.event.position.EventPosition;
 import com.mcmiddleearth.mcmescripts.event.target.EntityEventTarget;
-import com.mcmiddleearth.mcmescripts.selector.Selector;
 import com.mcmiddleearth.mcmescripts.trigger.TriggerContext;
-import org.bukkit.Location;
 
-public class LocationProximityCondition extends CriterionCondition {
+import java.util.List;
+import java.util.logging.Logger;
 
-    private final Location location;
+public class LocationProximityCondition extends Condition {
 
-    public LocationProximityCondition(EntityEventTarget target, Location center, Criterion test) {
-        super(target, test);
-        this.location = center;
+    private final EventPosition position;
+    private final EntityEventTarget target;
+    private final DoubleCriterion test;
+
+    public LocationProximityCondition(EntityEventTarget target, EventPosition position, DoubleCriterion test) {
+        this.target = target;
+        this.position = position;
+        this.test = test;
     }
 
     @Override
     public boolean test(TriggerContext context) {
         context.getDescriptor().addLine(this.getClass().getSimpleName()).indent();
-        return super.test(context);
+        List<McmeEntity> entities =target.getTargets(context);
+        if(entities.size() > 0){
+            return test.apply(entities.get(0).getLocation().toVector().distance(position.getPosition(context)));
+        }
+        Logger.getGlobal().warning("No target found");
+        return false;
     }
-
-    public Descriptor getDescriptor() {
-        return super.getDescriptor()
-                .addLine("Location: " + location);
-    }
-
 }

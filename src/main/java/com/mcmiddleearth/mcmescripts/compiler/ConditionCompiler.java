@@ -10,6 +10,7 @@ import com.mcmiddleearth.mcmescripts.condition.proximity.PlayerProximityConditio
 import com.mcmiddleearth.mcmescripts.condition.proximity.VirtualEntityProximityCondition;
 import com.mcmiddleearth.mcmescripts.debug.DebugManager;
 import com.mcmiddleearth.mcmescripts.debug.Modules;
+import com.mcmiddleearth.mcmescripts.event.position.EventPosition;
 import com.mcmiddleearth.mcmescripts.event.target.EntityEventTarget;
 import com.mcmiddleearth.mcmescripts.event.target.PlayerEventTarget;
 import com.mcmiddleearth.mcmescripts.event.target.VirtualEntityEventTarget;
@@ -38,6 +39,9 @@ public class ConditionCompiler {
                                 KEY_MANUAL_OVERRIDE     = "manual_animation_override",
                                 KEY_TAG_NAME            = "tag_name",
                                 KEY_VALUE               = "value",
+                                KEY_POSITION        = "position",
+                                KEY_SCOREBOARD_OBJECTIVE = "scoreboard_objective",
+                                KEY_SCOREBOARD_PLAYER    = "scoreboard_player",
                                 KEY_START               = "start",
                                 KEY_END                 = "end",
                                 KEY_WORLD               = "world",
@@ -53,7 +57,8 @@ public class ConditionCompiler {
                                 VALUE_ANIMATION             = "animation",
                                 VALUE_PLAYER_ONLINE         = "player_online",
                                 VALUE_SERVER_DAYTIME        = "server_daytime",
-                                VALUE_HAS_TAG_VALUE         = "tag_value";
+                                VALUE_HAS_TAG_VALUE         = "tag_value",
+                                VALUE_SCOREBOARD_VALUE      = "scoreboard_value";
 
     public static Set<Condition> compile(JsonObject jsonData) {
         JsonElement conditions = jsonData.get(KEY_CONDITION);
@@ -120,12 +125,12 @@ public class ConditionCompiler {
                 case VALUE_PROXIMITY_LOCATION -> {
                     JsonObject targetJson = jsonObject.getAsJsonObject(KEY_TARGET);
                     EntityEventTarget target = TargetCompiler.compileEntityTarget(targetJson);
-                    Location location = LocationCompiler.compile(jsonObject.get(KEY_CENTER)).orElse(null);
-                    if(location==null) {
+                    EventPosition position = PositionCompiler.compile(jsonObject.getAsJsonObject(KEY_POSITION));
+                    if(position==null) {
                         DebugManager.warn(Modules.Condition.create(ConditionCompiler.class),"Can't compile "+VALUE_PROXIMITY_LOCATION+" condition. Missing center location.");
                         return Optional.empty();
                     }
-                    return Optional.of(new LocationProximityCondition(target, location, compileCriterion(jsonObject)));
+                    return Optional.of(new LocationProximityCondition(target,position, compileDoubleCriterion(jsonObject)));
                 }
                 case VALUE_PROXIMITY_PLAYER -> {
                     JsonObject playerTargetJson = jsonObject.getAsJsonObject(KEY_PLAYER_TARGET);
@@ -181,6 +186,11 @@ public class ConditionCompiler {
                 case VALUE_HAS_TAG_VALUE -> {
                     String name = PrimitiveCompiler.compileString(jsonObject.get(KEY_TAG_NAME),null);
                     return Optional.of(new TagCriterionCondition(name, compileCriterion(jsonObject)));
+                }
+                case VALUE_SCOREBOARD_VALUE -> {
+                    String playerName = PrimitiveCompiler.compileString(jsonObject.get(KEY_SCOREBOARD_PLAYER),null);
+                    String objectiveName = PrimitiveCompiler.compileString(jsonObject.get(KEY_SCOREBOARD_OBJECTIVE),null);
+                    return Optional.of(new ScoreboardValueCondition(playerName,objectiveName, compileCriterion(jsonObject)));
                 }
             }
         } catch(NullPointerException ignore) {}
