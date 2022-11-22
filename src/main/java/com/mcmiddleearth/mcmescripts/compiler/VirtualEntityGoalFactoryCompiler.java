@@ -1,6 +1,5 @@
 package com.mcmiddleearth.mcmescripts.compiler;
 
-import com.craftmend.thirdparty.iosocket.global.Global;
 import com.google.gson.*;
 import com.google.gson.stream.JsonReader;
 import com.mcmiddleearth.entities.EntitiesPlugin;
@@ -12,9 +11,7 @@ import com.mcmiddleearth.mcmescripts.debug.Modules;
 import com.mcmiddleearth.mcmescripts.event.EventGoalFactory;
 import com.mcmiddleearth.mcmescripts.event.position.EventPosition;
 import com.mcmiddleearth.mcmescripts.event.rotation.EventRotation;
-import com.mcmiddleearth.mcmescripts.event.target.EntityEventTarget;
-import org.bukkit.Location;
-import org.w3c.dom.events.EventTarget;
+import com.mcmiddleearth.mcmescripts.event.eventTarget.EntityEventTarget;
 
 import java.io.File;
 import java.io.FileReader;
@@ -23,8 +20,6 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Vector;
-import java.util.logging.Logger;
 
 public class VirtualEntityGoalFactoryCompiler {
 

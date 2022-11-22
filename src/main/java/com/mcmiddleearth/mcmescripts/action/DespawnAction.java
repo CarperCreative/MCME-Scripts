@@ -2,9 +2,8 @@ package com.mcmiddleearth.mcmescripts.action;
 
 import com.mcmiddleearth.entities.EntitiesPlugin;
 import com.mcmiddleearth.mcmescripts.action.targeted.VirtualEntityTargetedAction;
-import com.mcmiddleearth.mcmescripts.event.target.VirtualEntityEventTarget;
+import com.mcmiddleearth.mcmescripts.event.eventTarget.VirtualEntityEventTarget;
 import org.bukkit.Particle;
-import org.bukkit.World;
 
 public class DespawnAction extends VirtualEntityTargetedAction {
 

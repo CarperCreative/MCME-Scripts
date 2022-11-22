@@ -2,7 +2,7 @@ package com.mcmiddleearth.mcmescripts.action;
 
 import com.mcmiddleearth.mcmescripts.MCMEScripts;
 import com.mcmiddleearth.mcmescripts.action.targeted.PlayerTargetedAction;
-import com.mcmiddleearth.mcmescripts.event.target.PlayerEventTarget;
+import com.mcmiddleearth.mcmescripts.event.eventTarget.PlayerEventTarget;
 import com.mcmiddleearth.mcmescripts.listener.PlayerEyeEffectBlockListener;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;

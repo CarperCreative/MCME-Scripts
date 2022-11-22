@@ -1,12 +1,11 @@
 package com.mcmiddleearth.mcmescripts.action;
 
-import com.craftmend.thirdparty.iosocket.global.Global;
 import com.mcmiddleearth.entities.entities.RealPlayer;
 import com.mcmiddleearth.mcmescripts.action.targeted.EntityTargetedAction;
 import com.mcmiddleearth.mcmescripts.event.position.EventPosition;
 import com.mcmiddleearth.mcmescripts.event.rotation.EventRotation;
 import com.mcmiddleearth.mcmescripts.event.rotation.Rotation;
-import com.mcmiddleearth.mcmescripts.event.target.EntityEventTarget;
+import com.mcmiddleearth.mcmescripts.event.eventTarget.EntityEventTarget;
 import org.bukkit.Location;
 import org.bukkit.block.BlockFace;
 import org.bukkit.util.Vector;

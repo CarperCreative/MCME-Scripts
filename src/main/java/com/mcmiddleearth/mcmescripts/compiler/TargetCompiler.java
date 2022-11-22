@@ -3,13 +3,13 @@ package com.mcmiddleearth.mcmescripts.compiler;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import com.mcmiddleearth.mcmescripts.event.target.*;
-import com.mcmiddleearth.mcmescripts.event.target.context.EntityContextTarget;
-import com.mcmiddleearth.mcmescripts.event.target.context.PlayerContextTarget;
-import com.mcmiddleearth.mcmescripts.event.target.context.VirtualEntityContextTarget;
-import com.mcmiddleearth.mcmescripts.event.target.selector.EntitySelectorTarget;
-import com.mcmiddleearth.mcmescripts.event.target.selector.PlayerSelectorTarget;
-import com.mcmiddleearth.mcmescripts.event.target.selector.VirtualEntitySelectorTarget;
+import com.mcmiddleearth.mcmescripts.event.eventTarget.*;
+import com.mcmiddleearth.mcmescripts.event.eventTarget.context.EntityContextTarget;
+import com.mcmiddleearth.mcmescripts.event.eventTarget.context.PlayerContextTarget;
+import com.mcmiddleearth.mcmescripts.event.eventTarget.context.VirtualEntityContextTarget;
+import com.mcmiddleearth.mcmescripts.event.eventTarget.selector.EntitySelectorTarget;
+import com.mcmiddleearth.mcmescripts.event.eventTarget.selector.PlayerSelectorTarget;
+import com.mcmiddleearth.mcmescripts.event.eventTarget.selector.VirtualEntitySelectorTarget;
 import com.mcmiddleearth.mcmescripts.selector.Selector;
 
 public class TargetCompiler {

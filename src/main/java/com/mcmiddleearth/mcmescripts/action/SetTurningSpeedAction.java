@@ -3,9 +3,7 @@ package com.mcmiddleearth.mcmescripts.action;
 import com.mcmiddleearth.entities.entities.composite.CompositeEntity;
 import com.mcmiddleearth.entities.entities.composite.WingedFlightEntity;
 import com.mcmiddleearth.mcmescripts.action.targeted.VirtualEntityTargetedAction;
-import com.mcmiddleearth.mcmescripts.event.target.VirtualEntityEventTarget;
-import org.bukkit.attribute.Attribute;
-import org.bukkit.attribute.AttributeInstance;
+import com.mcmiddleearth.mcmescripts.event.eventTarget.VirtualEntityEventTarget;
 
 public class SetTurningSpeedAction extends VirtualEntityTargetedAction {
 

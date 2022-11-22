@@ -4,7 +4,7 @@ import com.mcmiddleearth.entities.entities.McmeEntity;
 import com.mcmiddleearth.mcmescripts.condition.Condition;
 import com.mcmiddleearth.mcmescripts.condition.DoubleCriterion;
 import com.mcmiddleearth.mcmescripts.event.position.EventPosition;
-import com.mcmiddleearth.mcmescripts.event.target.EntityEventTarget;
+import com.mcmiddleearth.mcmescripts.event.eventTarget.EntityEventTarget;
 import com.mcmiddleearth.mcmescripts.trigger.TriggerContext;
 
 import java.util.List;

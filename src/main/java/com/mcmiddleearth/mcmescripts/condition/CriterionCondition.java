@@ -1,7 +1,7 @@
 package com.mcmiddleearth.mcmescripts.condition;
 
 import com.mcmiddleearth.mcmescripts.debug.Descriptor;
-import com.mcmiddleearth.mcmescripts.event.target.IEventTarget;
+import com.mcmiddleearth.mcmescripts.event.eventTarget.IEventTarget;
 import com.mcmiddleearth.mcmescripts.trigger.TriggerContext;
 
 public class CriterionCondition extends Condition {

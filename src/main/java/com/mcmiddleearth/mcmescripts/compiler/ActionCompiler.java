@@ -28,10 +28,10 @@ import com.mcmiddleearth.mcmescripts.event.EEntityContainer;
 import com.mcmiddleearth.mcmescripts.event.EventGoalFactory;
 import com.mcmiddleearth.mcmescripts.event.position.EventPosition;
 import com.mcmiddleearth.mcmescripts.event.rotation.EventRotation;
-import com.mcmiddleearth.mcmescripts.event.target.EntityEventTarget;
-import com.mcmiddleearth.mcmescripts.event.target.PlayerEventTarget;
-import com.mcmiddleearth.mcmescripts.event.target.VirtualEntityEventTarget;
-import com.mcmiddleearth.mcmescripts.event.target.selector.PlayerSelectorTarget;
+import com.mcmiddleearth.mcmescripts.event.eventTarget.EntityEventTarget;
+import com.mcmiddleearth.mcmescripts.event.eventTarget.PlayerEventTarget;
+import com.mcmiddleearth.mcmescripts.event.eventTarget.VirtualEntityEventTarget;
+import com.mcmiddleearth.mcmescripts.event.eventTarget.selector.PlayerSelectorTarget;
 import com.mcmiddleearth.mcmescripts.looting.LootTableChoice;
 import com.mcmiddleearth.mcmescripts.quest.tags.IntegerTag;
 import com.mcmiddleearth.mcmescripts.selector.Selector;
@@ -50,7 +50,6 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.util.Vector;
 
 import java.util.*;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 

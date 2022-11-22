@@ -1,13 +1,8 @@
 package com.mcmiddleearth.mcmescripts.action;
 
-import com.craftmend.openaudiomc.api.interfaces.AudioApi;
-import com.craftmend.openaudiomc.generic.media.objects.MediaOptions;
 import com.mcmiddleearth.mcmescripts.action.targeted.PlayerTargetedAction;
-import com.mcmiddleearth.mcmescripts.debug.DebugManager;
-import com.mcmiddleearth.mcmescripts.debug.Modules;
 import com.mcmiddleearth.mcmescripts.event.position.EventPosition;
-import com.mcmiddleearth.mcmescripts.event.target.PlayerEventTarget;
-import org.bukkit.Bukkit;
+import com.mcmiddleearth.mcmescripts.event.eventTarget.PlayerEventTarget;
 import org.bukkit.Location;
 import org.bukkit.SoundCategory;
 import org.bukkit.util.Vector;

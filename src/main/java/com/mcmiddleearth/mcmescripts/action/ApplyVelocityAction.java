@@ -1,15 +1,11 @@
 package com.mcmiddleearth.mcmescripts.action;
 
 import com.mcmiddleearth.mcmescripts.action.targeted.EntityTargetedAction;
-import com.mcmiddleearth.mcmescripts.debug.Descriptor;
 import com.mcmiddleearth.mcmescripts.event.rotation.EventRotation;
 import com.mcmiddleearth.mcmescripts.event.rotation.Rotation;
-import com.mcmiddleearth.mcmescripts.event.target.EntityEventTarget;
+import com.mcmiddleearth.mcmescripts.event.eventTarget.EntityEventTarget;
 import org.bukkit.Location;
-import org.bukkit.potion.PotionEffect;
 
-import java.util.Random;
-import java.util.Set;
 import java.util.logging.Logger;
 
 public class ApplyVelocityAction extends EntityTargetedAction {

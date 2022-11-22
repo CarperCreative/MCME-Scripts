@@ -3,7 +3,7 @@ package com.mcmiddleearth.mcmescripts.action;
 import com.mcmiddleearth.mcmescripts.action.targeted.EntityTargetedAction;
 import com.mcmiddleearth.mcmescripts.debug.DebugManager;
 import com.mcmiddleearth.mcmescripts.debug.Modules;
-import com.mcmiddleearth.mcmescripts.event.target.EntityEventTarget;
+import com.mcmiddleearth.mcmescripts.event.eventTarget.EntityEventTarget;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Set;

@@ -5,7 +5,7 @@ import com.mcmiddleearth.mcmescripts.action.targeted.EntityTargetedAction;
 import com.mcmiddleearth.mcmescripts.component.ItemFilter;
 import com.mcmiddleearth.mcmescripts.component.WrappedEnchantment;
 import com.mcmiddleearth.mcmescripts.debug.Descriptor;
-import com.mcmiddleearth.mcmescripts.event.target.EntityEventTarget;
+import com.mcmiddleearth.mcmescripts.event.eventTarget.EntityEventTarget;
 import com.mcmiddleearth.mcmescripts.looting.LootTable;
 import com.mcmiddleearth.mcmescripts.looting.LootTableChoice;
 import org.bukkit.Bukkit;

@@ -5,11 +5,8 @@ import com.mcmiddleearth.entities.entities.McmeEntity;
 import com.mcmiddleearth.entities.entities.VirtualEntity;
 import com.mcmiddleearth.mcmescripts.condition.Criterion;
 import com.mcmiddleearth.mcmescripts.condition.CriterionCondition;
-import com.mcmiddleearth.mcmescripts.debug.DebugManager;
 import com.mcmiddleearth.mcmescripts.debug.Descriptor;
-import com.mcmiddleearth.mcmescripts.debug.Modules;
-import com.mcmiddleearth.mcmescripts.event.target.EntityEventTarget;
-import com.mcmiddleearth.mcmescripts.selector.Selector;
+import com.mcmiddleearth.mcmescripts.event.eventTarget.EntityEventTarget;
 import com.mcmiddleearth.mcmescripts.trigger.TriggerContext;
 
 public class VirtualEntityProximityCondition extends CriterionCondition {

@@ -2,7 +2,7 @@ package com.mcmiddleearth.mcmescripts.action;
 
 import com.mcmiddleearth.entities.entities.composite.BakedAnimationEntity;
 import com.mcmiddleearth.mcmescripts.action.targeted.VirtualEntityTargetedAction;
-import com.mcmiddleearth.mcmescripts.event.target.VirtualEntityEventTarget;
+import com.mcmiddleearth.mcmescripts.event.eventTarget.VirtualEntityEventTarget;
 
 public class EntityStateAction extends VirtualEntityTargetedAction {
 

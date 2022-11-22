@@ -2,7 +2,7 @@ package com.mcmiddleearth.mcmescripts.action.targeted;
 
 import com.mcmiddleearth.entities.entities.VirtualEntity;
 import com.mcmiddleearth.mcmescripts.action.Action;
-import com.mcmiddleearth.mcmescripts.event.target.VirtualEntityEventTarget;
+import com.mcmiddleearth.mcmescripts.event.eventTarget.VirtualEntityEventTarget;
 import com.mcmiddleearth.mcmescripts.trigger.TriggerContext;
 
 import java.util.List;

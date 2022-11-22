@@ -4,7 +4,7 @@ import com.craftmend.openaudiomc.api.interfaces.AudioApi;
 import com.mcmiddleearth.mcmescripts.action.targeted.PlayerTargetedAction;
 import com.mcmiddleearth.mcmescripts.debug.DebugManager;
 import com.mcmiddleearth.mcmescripts.debug.Modules;
-import com.mcmiddleearth.mcmescripts.event.target.PlayerEventTarget;
+import com.mcmiddleearth.mcmescripts.event.eventTarget.PlayerEventTarget;
 
 public class OpenAudioSoundStopAction extends PlayerTargetedAction {
 

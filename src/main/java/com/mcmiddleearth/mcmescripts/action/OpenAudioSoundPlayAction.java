@@ -5,7 +5,7 @@ import com.craftmend.openaudiomc.generic.media.objects.MediaOptions;
 import com.mcmiddleearth.mcmescripts.action.targeted.PlayerTargetedAction;
 import com.mcmiddleearth.mcmescripts.debug.DebugManager;
 import com.mcmiddleearth.mcmescripts.debug.Modules;
-import com.mcmiddleearth.mcmescripts.event.target.PlayerEventTarget;
+import com.mcmiddleearth.mcmescripts.event.eventTarget.PlayerEventTarget;
 import org.bukkit.Bukkit;
 
 public class OpenAudioSoundPlayAction extends PlayerTargetedAction {

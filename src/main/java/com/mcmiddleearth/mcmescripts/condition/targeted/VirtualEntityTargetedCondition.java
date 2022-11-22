@@ -3,7 +3,7 @@ package com.mcmiddleearth.mcmescripts.condition.targeted;
 import com.mcmiddleearth.entities.entities.VirtualEntity;
 import com.mcmiddleearth.mcmescripts.condition.Condition;
 import com.mcmiddleearth.mcmescripts.debug.Descriptor;
-import com.mcmiddleearth.mcmescripts.event.target.VirtualEntityEventTarget;
+import com.mcmiddleearth.mcmescripts.event.eventTarget.VirtualEntityEventTarget;
 import com.mcmiddleearth.mcmescripts.trigger.TriggerContext;
 
 import java.util.function.Function;

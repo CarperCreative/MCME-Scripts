@@ -1,6 +1,6 @@
 package com.mcmiddleearth.mcmescripts.condition;
 
-import com.mcmiddleearth.mcmescripts.event.target.PlayerEventTarget;
+import com.mcmiddleearth.mcmescripts.event.eventTarget.PlayerEventTarget;
 
 public class OnlinePlayerCondition extends CriterionCondition {
 

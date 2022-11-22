@@ -1,7 +1,7 @@
 package com.mcmiddleearth.mcmescripts.action.targeted;
 
 import com.mcmiddleearth.mcmescripts.action.Action;
-import com.mcmiddleearth.mcmescripts.event.target.PlayerEventTarget;
+import com.mcmiddleearth.mcmescripts.event.eventTarget.PlayerEventTarget;
 import com.mcmiddleearth.mcmescripts.trigger.TriggerContext;
 import org.bukkit.entity.Player;
 

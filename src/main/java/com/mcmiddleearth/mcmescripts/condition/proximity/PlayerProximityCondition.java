@@ -3,8 +3,8 @@ package com.mcmiddleearth.mcmescripts.condition.proximity;
 import com.mcmiddleearth.entities.entities.VirtualEntity;
 import com.mcmiddleearth.mcmescripts.condition.Condition;
 import com.mcmiddleearth.mcmescripts.condition.DoubleCriterion;
-import com.mcmiddleearth.mcmescripts.event.target.PlayerEventTarget;
-import com.mcmiddleearth.mcmescripts.event.target.VirtualEntityEventTarget;
+import com.mcmiddleearth.mcmescripts.event.eventTarget.PlayerEventTarget;
+import com.mcmiddleearth.mcmescripts.event.eventTarget.VirtualEntityEventTarget;
 import com.mcmiddleearth.mcmescripts.trigger.TriggerContext;
 import org.bukkit.entity.Player;
 

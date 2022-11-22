@@ -1,10 +1,8 @@
 package com.mcmiddleearth.mcmescripts.event.position;
 
 import com.mcmiddleearth.entities.entities.McmeEntity;
-import com.mcmiddleearth.mcmescripts.event.target.EntityEventTarget;
-import com.mcmiddleearth.mcmescripts.selector.Selector;
+import com.mcmiddleearth.mcmescripts.event.eventTarget.EntityEventTarget;
 import com.mcmiddleearth.mcmescripts.trigger.TriggerContext;
-import org.bukkit.Location;
 import org.bukkit.util.Vector;
 
 import java.util.List;

@@ -1,7 +1,7 @@
 package com.mcmiddleearth.mcmescripts.action;
 
 import com.mcmiddleearth.mcmescripts.action.targeted.PlayerTargetedAction;
-import com.mcmiddleearth.mcmescripts.event.target.PlayerEventTarget;
+import com.mcmiddleearth.mcmescripts.event.eventTarget.PlayerEventTarget;
 import net.kyori.adventure.text.Component;
 
 public class ActionBarAction extends PlayerTargetedAction {

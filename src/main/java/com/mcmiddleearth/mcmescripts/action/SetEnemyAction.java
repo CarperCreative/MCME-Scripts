@@ -2,8 +2,8 @@ package com.mcmiddleearth.mcmescripts.action;
 
 import com.mcmiddleearth.entities.entities.McmeEntity;
 import com.mcmiddleearth.mcmescripts.action.targeted.VirtualEntityTargetedAction;
-import com.mcmiddleearth.mcmescripts.event.target.EntityEventTarget;
-import com.mcmiddleearth.mcmescripts.event.target.VirtualEntityEventTarget;
+import com.mcmiddleearth.mcmescripts.event.eventTarget.EntityEventTarget;
+import com.mcmiddleearth.mcmescripts.event.eventTarget.VirtualEntityEventTarget;
 
 import java.util.HashSet;
 import java.util.List;

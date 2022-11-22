@@ -6,12 +6,8 @@ import com.google.gson.JsonPrimitive;
 import com.mcmiddleearth.mcmescripts.event.position.*;
 import com.mcmiddleearth.mcmescripts.debug.DebugManager;
 import com.mcmiddleearth.mcmescripts.debug.Modules;
-import com.mcmiddleearth.mcmescripts.event.target.EntityEventTarget;
-import com.mcmiddleearth.mcmescripts.selector.Selector;
-import org.bukkit.Bukkit;
+import com.mcmiddleearth.mcmescripts.event.eventTarget.EntityEventTarget;
 import org.bukkit.util.Vector;
-
-import java.util.logging.Logger;
 
 public class PositionCompiler {
 

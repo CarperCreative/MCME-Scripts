@@ -1,17 +1,13 @@
 package com.mcmiddleearth.mcmescripts.action;
 
-import com.mcmiddleearth.mcmescripts.action.targeted.PlayerTargetedAction;
 import com.mcmiddleearth.mcmescripts.debug.DebugManager;
 import com.mcmiddleearth.mcmescripts.debug.Modules;
 import com.mcmiddleearth.mcmescripts.event.position.EventPosition;
 import com.mcmiddleearth.mcmescripts.event.rotation.EventRotation;
 import com.mcmiddleearth.mcmescripts.event.rotation.Rotation;
-import com.mcmiddleearth.mcmescripts.event.target.PlayerEventTarget;
 import com.mcmiddleearth.mcmescripts.trigger.TriggerContext;
 import org.bukkit.Bukkit;
 import org.bukkit.util.Vector;
-
-import java.util.logging.Logger;
 
 public class ExecuteCommandAction extends Action {
 

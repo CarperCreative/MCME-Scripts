@@ -1,7 +1,6 @@
 package com.mcmiddleearth.mcmescripts.condition;
 
 import com.mcmiddleearth.mcmescripts.debug.Descriptor;
-import com.mcmiddleearth.mcmescripts.event.target.IEventTarget;
 import com.mcmiddleearth.mcmescripts.quest.tags.AbstractTag;
 import com.mcmiddleearth.mcmescripts.quest.tags.IntegerTag;
 import com.mcmiddleearth.mcmescripts.trigger.TriggerContext;

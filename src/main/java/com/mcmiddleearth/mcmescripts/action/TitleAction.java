@@ -3,7 +3,7 @@ package com.mcmiddleearth.mcmescripts.action;
 import com.mcmiddleearth.mcmescripts.action.targeted.PlayerTargetedAction;
 import com.mcmiddleearth.mcmescripts.debug.DebugManager;
 import com.mcmiddleearth.mcmescripts.debug.Modules;
-import com.mcmiddleearth.mcmescripts.event.target.PlayerEventTarget;
+import com.mcmiddleearth.mcmescripts.event.eventTarget.PlayerEventTarget;
 
 import java.util.logging.Logger;
 

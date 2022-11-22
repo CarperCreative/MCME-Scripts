@@ -7,7 +7,7 @@ import com.mcmiddleearth.entities.PersistentDataKey;
 import com.mcmiddleearth.entities.entities.McmeEntity;
 import com.mcmiddleearth.mcmescripts.action.targeted.EntityTargetedAction;
 import com.mcmiddleearth.mcmescripts.compiler.ItemCompiler;
-import com.mcmiddleearth.mcmescripts.event.target.EntityEventTarget;
+import com.mcmiddleearth.mcmescripts.event.eventTarget.EntityEventTarget;
 import com.mcmiddleearth.mcmescripts.looting.LootTableChoice;
 import com.mcmiddleearth.mcmescripts.looting.LootTable;
 import com.mcmiddleearth.mcmescripts.trigger.TriggerContext;
