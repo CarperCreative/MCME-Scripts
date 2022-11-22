@@ -34,7 +34,7 @@ public class RotationCompiler {
         JsonElement pitchOffsetJson = jsonObject.getAsJsonObject().get(KEY_OFFSET_PITCH);
         if(pitchOffsetJson instanceof JsonPrimitive) pitchOffset = pitchOffsetJson.getAsFloat();
         JsonElement yawOffsetJson = jsonObject.getAsJsonObject().get(KEY_OFFSET_YAW);
-        if(yawOffsetJson instanceof JsonPrimitive) yawOffset = pitchOffsetJson.getAsFloat();
+        if(yawOffsetJson instanceof JsonPrimitive) yawOffset = yawOffsetJson.getAsFloat();
 
         switch (typeJson.getAsString()){
             case VALUE_PITCH_YAW -> {

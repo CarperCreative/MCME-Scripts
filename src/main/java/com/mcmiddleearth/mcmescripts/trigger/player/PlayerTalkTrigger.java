@@ -44,6 +44,8 @@ public class PlayerTalkTrigger extends BukkitEventTrigger {
                     !message.split(" ")[0].substring(1,message.length()).equals(command))) // Match command but allow room for arguments
                 return;
 
+            event.setCancelled(true);
+
             TriggerContext context = new TriggerContext(this)
                     .withPlayer(event.getPlayer())
                     .withMessage(message)
