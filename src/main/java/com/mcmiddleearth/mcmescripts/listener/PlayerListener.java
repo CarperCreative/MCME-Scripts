@@ -1,15 +1,30 @@
 package com.mcmiddleearth.mcmescripts.listener;
 
-import org.bukkit.attribute.Attribute;
-import org.bukkit.attribute.AttributeInstance;
+import io.papermc.paper.event.player.AsyncChatEvent;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class PlayerListener implements Listener {
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onPlayerMessage(AsyncChatEvent event) {
+        // NKH HP: mute all messages starting with !
+        Pattern pattern = Pattern.compile("(?<=content=\")(.*)(?=\")");
+        String fullMessage = event.message().toString();
+        Matcher matcher = pattern.matcher(fullMessage);
+        if(matcher.find()) {
+            String message = matcher.group(0);
+            if (message.startsWith("!")) {
+                event.setCancelled(true);
+            }
+        }
+    }
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
