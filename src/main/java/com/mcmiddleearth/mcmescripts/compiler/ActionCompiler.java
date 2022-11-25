@@ -14,6 +14,7 @@ import com.mcmiddleearth.mcmescripts.action.*;
 import com.mcmiddleearth.mcmescripts.action.bossbattle.GoToRandomTimelineAction;
 import com.mcmiddleearth.mcmescripts.action.bossbattle.RestartTimelineAction;
 import com.mcmiddleearth.mcmescripts.action.bossbattle.GoToTimelineAction;
+import com.mcmiddleearth.mcmescripts.action.bossbattle.StopBossBattleAction;
 import com.mcmiddleearth.mcmescripts.action.quest.StageDisableAction;
 import com.mcmiddleearth.mcmescripts.action.quest.StageEnableAction;
 import com.mcmiddleearth.mcmescripts.action.tag.TagAddToAction;
@@ -81,6 +82,7 @@ public class ActionCompiler {
                                 KEY_STATE           = "state",
                                 KEY_ANIMATION       = "animation",
                                 KEY_OVERRIDE        = "override",
+                                KEY_MANUAL          = "manual",
                                 KEY_ITEM            = "item",
                                 KEY_ITEMS           = "items",
                                 KEY_ITEM_FILTER     = "item_filter",
@@ -144,7 +146,8 @@ public class ActionCompiler {
                                 KEY_OVERRIDE_VELOCITY = "override_velocity",
                                 KEY_MAX_HEALTH      = "max_health",
                                 KEY_DIRECTION       = "direction",
-                                KEY_DAMAGE       = "damage",
+                                KEY_DAMAGE          = "damage",
+                                KEY_INVULNERABLE    = "invulnerable",
 
                                 KEY_TIMELINE_CONFIGURATION         = "timeline_configuration",
                                 KEY_TIMELINE_CONFIGURATION_CHOICES = "timeline_configuration_choices",
@@ -211,7 +214,10 @@ public class ActionCompiler {
                                 VALUE_APPLY_VELOCITY        = "apply_velocity",
                                 VALUE_SET_BOSS_BAR_VALUE_FROM_HEALTH = "set_boss_bar_value_from_health",
                                 VALUE_SET_FIRE_TO_PLAYER_NEAR_POSITION = "set_fire_to_player_near_position",
-                                VALUE_DAMAGE_PLAYER_NEAR_POSITION = "damage_player_near_position";
+                                VALUE_DAMAGE_PLAYER_NEAR_POSITION = "damage_player_near_position",
+                                VALUE_SET_MANUAL_ANIMATION_CONTROL = "manual_animation_control",
+                                VALUE_SET_INVULNERABLE = "set_invulnerable",
+                                VALUE_STOP_BOSS_BATTLE = "stop_boss_battle";
 
 
     public static Collection<Action> compile(JsonObject jsonData) {
@@ -944,6 +950,27 @@ public class ActionCompiler {
                 double radius = PrimitiveCompiler.compileDouble(jsonObject.get(KEY_RADIUS),100);
 
                 action = new DamagePlayerNearPositionAction(target,position,radius,damage);
+            }
+            case VALUE_SET_MANUAL_ANIMATION_CONTROL -> {
+                JsonElement manualJson = jsonObject.get(KEY_MANUAL);
+                boolean manual = true;
+                if(manualJson instanceof JsonPrimitive) {
+                    manual = manualJson.getAsBoolean();
+                }
+                VirtualEntityEventTarget target = TargetCompiler.compileVirtualEntityTarget(jsonObject.getAsJsonObject(KEY_TARGET));
+                action = new SetManualAnimationControlAction(target, manual);
+            }
+            case VALUE_SET_INVULNERABLE -> {
+                JsonElement manualJson = jsonObject.get(KEY_INVULNERABLE);
+                boolean invulnerable = true;
+                if(manualJson instanceof JsonPrimitive) {
+                    invulnerable = manualJson.getAsBoolean();
+                }
+                EntityEventTarget target = TargetCompiler.compileEntityTarget(jsonObject.getAsJsonObject(KEY_TARGET));
+                action = new SetInvulnerableAction(target, invulnerable);
+            }
+            case VALUE_STOP_BOSS_BATTLE -> {
+                action = new StopBossBattleAction();
             }
             default -> {
                 DebugManager.severe(Modules.Action.create(ActionCompiler.class),"Can't compile action. Unsupported action type.");

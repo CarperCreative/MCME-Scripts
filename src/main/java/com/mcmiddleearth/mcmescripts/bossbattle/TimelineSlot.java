@@ -46,7 +46,7 @@ public class TimelineSlot implements ITriggerContainer {
         Logger.getGlobal().info("Triggering start triggers for timeline slot: " + getName());
         startTriggers.forEach(trigger -> {
             trigger.setTriggerContainer(this);
-            trigger.call(new TriggerContext(trigger));
+            trigger.call(new TriggerContext(trigger).withName(bossBattle.donorName).withMessage(bossBattle.donorMessage));
         });
     }
 

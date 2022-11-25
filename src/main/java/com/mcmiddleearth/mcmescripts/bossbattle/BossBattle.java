@@ -37,6 +37,12 @@ public class BossBattle implements ITriggerContainer, IEntityContainer, ITagCont
      */
     private final Set<Trigger> timelineTriggers = new HashSet<>();
 
+
+    // Temporary hack for donations
+    public String donorName;
+    public String donorMessage;
+    public String donorAmount;
+
     public BossBattle(String name){
         this.name = name;
     }
@@ -44,6 +50,12 @@ public class BossBattle implements ITriggerContainer, IEntityContainer, ITagCont
     public BossBattle(String name, List<Timeline> timelinesList){
         this.name = name;
         setTimelines(timelinesList);
+    }
+
+    public void setDonation(String donorName, String donorMessage, String donorAmount){
+        this.donorName = donorName;
+        this.donorMessage = donorMessage;
+        this.donorAmount = donorAmount;
     }
 
     public void setTimelines(List<Timeline> timelinesList){

@@ -22,6 +22,7 @@ public final class MCMEScripts extends JavaPlugin {
     private static TimedTriggerManager timedTriggerManager;
     private static ExternalTriggerManager externalTriggerManager;
     private static ScriptManager scriptManager;
+    private static BossBattleManager bossBattleManager;
     private static MCMEScripts instance;
 
     @Override
@@ -30,6 +31,7 @@ public final class MCMEScripts extends JavaPlugin {
         instance = this;
         DebugManager.open();
         scriptManager = new ScriptManager();
+        bossBattleManager = new BossBattleManager();
         timedTriggerManager = new TimedTriggerManager();
         externalTriggerManager = new ExternalTriggerManager();
         Bukkit.getPluginManager().registerEvents(new PartyListener(),this);
@@ -57,7 +59,7 @@ public final class MCMEScripts extends JavaPlugin {
         QuestManager.readQuests();
         QuestManager.startChecker();
 
-        BossBattleManager.readBossBattles();
+        bossBattleManager.readBossBattles();
     }
 
     public void disableScripts() {
@@ -74,6 +76,10 @@ public final class MCMEScripts extends JavaPlugin {
 
     public static ExternalTriggerManager getExternalTriggerManager() {
         return externalTriggerManager;
+    }
+
+    public static BossBattleManager getBossBattleManager() {
+        return bossBattleManager;
     }
 
     public static MCMEScripts getInstance() {

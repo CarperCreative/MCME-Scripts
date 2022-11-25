@@ -2,19 +2,8 @@ package com.mcmiddleearth.mcmescripts.bossbattle;
 
 import com.google.gson.JsonSyntaxException;
 import com.mcmiddleearth.command.McmeCommandSender;
-import com.mcmiddleearth.mcmescripts.ConfigKeys;
 import com.mcmiddleearth.mcmescripts.MCMEScripts;
-import com.mcmiddleearth.mcmescripts.debug.DebugManager;
-import com.mcmiddleearth.mcmescripts.debug.Descriptor;
-import com.mcmiddleearth.mcmescripts.debug.Modules;
-import com.mcmiddleearth.mcmescripts.quest.Quest;
-import com.mcmiddleearth.mcmescripts.quest.QuestData;
-import com.mcmiddleearth.mcmescripts.quest.QuestLoader;
-import com.mcmiddleearth.mcmescripts.quest.party.Party;
-import com.mcmiddleearth.mcmescripts.quest.party.PartyManager;
 import com.mojang.brigadier.context.CommandContext;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
 
 import java.io.File;
 import java.io.IOException;
@@ -47,20 +36,20 @@ public class BossBattleManager {
      * Map of all quest loaders, one for each quest.
      * mapping: Quest name -> Quest loader
      */
-    private static final Map<String, BossBattleLoader> bossBattleLoaders = new HashMap<>();
+    private final Map<String, BossBattleLoader> bossBattleLoaders = new HashMap<>();
 
     /**
      * Map of all quest instance of all loaded parties
      * mapping: quest -> Set of all quests this party is doing.
      */
-    private static final List<BossBattle> activeBossBattles = new ArrayList<>();
+    private final List<BossBattle> activeBossBattles = new ArrayList<>();
 
     /**
      * Folder for storing quest information (entities and events of all stages)
      */
-    private static final File bossBattlesFolder = new File(MCMEScripts.getInstance().getDataFolder(),"bossbatles");
+    private final File bossBattlesFolder = new File(MCMEScripts.getInstance().getDataFolder(),"bossbatles");
 
-    public static void readBossBattles() {
+    public void readBossBattles() {
         removeBossBattles();
         //questLifetimeCheckPeriod = MCMEScripts.getConfigLong(ConfigKeys.QUEST_LIFETIME, 1000*3600*24);
         if(!bossBattlesFolder.exists()) {
@@ -79,17 +68,27 @@ public class BossBattleManager {
         }
     }
 
-    public static void createBossBattle(String name, CommandContext<McmeCommandSender> context){
+    public void startBossBattle(String name, String donor, String message, String amount){
 
         if(bossBattleLoaders.containsKey(name.toLowerCase())){
-            activeBossBattles.add(bossBattleLoaders.get(name.toLowerCase()).getBossBattle());
-            context.getSource().sendMessage("Boss battle '" + name + "' started.");
-        } else {
-            context.getSource().sendMessage("No boss battle with the name '" + name + "' has been loaded.");
+
+            BossBattle bossBattle = bossBattleLoaders.get(name.toLowerCase()).getBossBattle();
+            bossBattle.setDonation(donor,message,amount);
+            activeBossBattles.add(bossBattle);
         }
     }
 
-    public static void removeBossBattle(String name) {
+    public void startBossBattle(String name, CommandContext<McmeCommandSender> context){
+
+        if(bossBattleLoaders.containsKey(name.toLowerCase())){
+            activeBossBattles.add(bossBattleLoaders.get(name.toLowerCase()).getBossBattle());
+            if (context != null) context.getSource().sendMessage("Boss battle '" + name + "' started.");
+        } else {
+            if (context != null) context.getSource().sendMessage("No boss battle with the name '" + name + "' has been loaded.");
+        }
+    }
+
+    public void removeBossBattle(String name) {
         BossBattle bossBattleToRemove = null;
         for(BossBattle bossBattle : activeBossBattles){
             if (bossBattle.getName().equalsIgnoreCase(name)){
@@ -102,20 +101,20 @@ public class BossBattleManager {
         }
     }
 
-    public static void removeBossBattles() {
+    public void removeBossBattles() {
         unloadActiveBossBattles();
         bossBattleLoaders.clear();
     }
 
-    public static void unloadActiveBossBattles() {
+    public void unloadActiveBossBattles() {
         activeBossBattles.forEach(BossBattle::stop);
         activeBossBattles.clear();
     }
 
-    public static List<BossBattle> getAllActiveBossBattles() {
+    public List<BossBattle> getAllActiveBossBattles() {
         return activeBossBattles;
     }
-    public static Map<String,BossBattleLoader> getAllBossBattleLoaders() {
+    public Map<String,BossBattleLoader> getAllBossBattleLoaders() {
         return bossBattleLoaders;
     }
 }

@@ -8,6 +8,7 @@ import com.mcmiddleearth.mcmescripts.action.Action;
 import com.mcmiddleearth.mcmescripts.condition.Condition;
 import com.mcmiddleearth.mcmescripts.debug.DebugManager;
 import com.mcmiddleearth.mcmescripts.debug.Modules;
+import com.mcmiddleearth.mcmescripts.event.eventTarget.EntityEventTarget;
 import com.mcmiddleearth.mcmescripts.selector.McmeEntitySelector;
 import com.mcmiddleearth.mcmescripts.trigger.DecisionTreeTrigger;
 import com.mcmiddleearth.mcmescripts.trigger.ExternalTrigger;
@@ -15,10 +16,7 @@ import com.mcmiddleearth.mcmescripts.trigger.SimpleTrigger;
 import com.mcmiddleearth.mcmescripts.trigger.Trigger;
 import com.mcmiddleearth.mcmescripts.trigger.player.*;
 import com.mcmiddleearth.mcmescripts.trigger.timed.*;
-import com.mcmiddleearth.mcmescripts.trigger.virtual.AnimationChangeTrigger;
-import com.mcmiddleearth.mcmescripts.trigger.virtual.GoalFinishedTrigger;
-import com.mcmiddleearth.mcmescripts.trigger.virtual.VirtualEntityStopTalkTrigger;
-import com.mcmiddleearth.mcmescripts.trigger.virtual.VirtualEntityTalkTrigger;
+import com.mcmiddleearth.mcmescripts.trigger.virtual.*;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -46,6 +44,7 @@ public class TriggerCompiler {
                                 KEY_CENTER          = "center",
                                 KEY_MET_ALL_CONDITIONS  = "met_all_conditions",
                                 KEY_NAME                = "name",
+                                KEY_TARGET              = "target",
                                 KEY_ITEM_NAME           = "item_name",
                                 KEY_CURRENT_ANIMATION   = "current_animation",
                                 KEY_NEXT_ANIMATION      = "next_animation",
@@ -61,6 +60,7 @@ public class TriggerCompiler {
                                 VALUE_PLAYER_JOIN_TRIGGER           = "player_join",
                                 VALUE_PLAYER_QUIT_TRIGGER           = "player_quit",
                                 VALUE_PLAYER_VIRTUAL_ATTACK_TRIGGER = "player_virtual_attack",
+                                VALUE_ENTITY_TAKE_DAMAGE            = "take_damage",
                                 VALUE_USE_ITEM_TRIGGER              = "use_item",
                                 VALUE_VIRTUAL_TALK_TRIGGER              = "virtual_talk",
                                 VALUE_VIRTUAL_STOP_TALK_TRIGGER         = "virtual_stop_talk",
@@ -212,6 +212,10 @@ public class TriggerCompiler {
                     return Optional.empty();
                 }
                 trigger = new ExternalTrigger(null,itemName);
+                break;
+            case VALUE_ENTITY_TAKE_DAMAGE:
+                EntityEventTarget target = TargetCompiler.compileEntityTarget(jsonObject.getAsJsonObject(KEY_TARGET));
+                trigger = new VirtualEntityTakeDamageTrigger(null,target);
                 break;
             case VALUE_SIMPLE_TRIGGER:
                 trigger = new SimpleTrigger();

@@ -15,12 +15,12 @@ public class TitleAction extends PlayerTargetedAction {
             String finalTitle = title;
             String finalSubtitle = subtitle;
             if(context.getMessage()!=null) {
-                finalTitle = title.replace("*message*", context.getMessage());
-                finalSubtitle = subtitle.replace("*message*", context.getMessage());
+                finalTitle = finalTitle.replace("*message*", context.getMessage());
+                finalSubtitle = finalSubtitle.replace("*message*", context.getMessage());
             }
             if(context.getName()!=null) {
-                finalTitle = title.replace("*name*", context.getName());
-                finalSubtitle = subtitle.replace("*name*", context.getName());
+                finalTitle = finalTitle.replace("*name*", context.getName());
+                finalSubtitle = finalSubtitle.replace("*name*", context.getName());
             }
             player.sendTitle(finalTitle,finalSubtitle,fadeIn,stay,fadeOut);
         });

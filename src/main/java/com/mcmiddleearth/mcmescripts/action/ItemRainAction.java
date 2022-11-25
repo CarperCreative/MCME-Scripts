@@ -6,6 +6,8 @@ import com.mcmiddleearth.mcmescripts.event.eventTarget.EntityEventTarget;
 import org.bukkit.Location;
 import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.material.MaterialData;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
