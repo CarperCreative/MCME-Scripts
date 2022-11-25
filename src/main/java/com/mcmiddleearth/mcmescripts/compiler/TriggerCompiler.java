@@ -17,6 +17,8 @@ import com.mcmiddleearth.mcmescripts.trigger.Trigger;
 import com.mcmiddleearth.mcmescripts.trigger.player.*;
 import com.mcmiddleearth.mcmescripts.trigger.timed.*;
 import com.mcmiddleearth.mcmescripts.trigger.virtual.*;
+import org.bukkit.Bukkit;
+import org.bukkit.World;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -227,7 +229,17 @@ public class TriggerCompiler {
         }
         DecisionTreeTrigger.DecisionNode decisionNode = compileDecisionNode(jsonObject);
         trigger.setDecisionNode(decisionNode);
-        trigger.setWorld(PrimitiveCompiler.compileString(jsonObject.get("world"),"world"));
+
+        // NKH HP: Whatever.
+        String defaultWorldName = "world";
+        for (World world : Bukkit.getWorlds()) {
+            if (world.getName().equals("weasley_estate")) {
+                defaultWorldName = world.getName();
+                break;
+            }
+        }
+
+        trigger.setWorld(PrimitiveCompiler.compileString(jsonObject.get("world"), defaultWorldName));
         //trigger.setLocation(LocationCompiler.compile(jsonObject.get(KEY_LOCATION)).orElse(null));
         //trigger.setPlayer(SelectorCompiler.compileSelector(jsonObject,KEY_PLAYER));
         //trigger.setEntity(SelectorCompiler.compileSelector(jsonObject,KEY_PLAYER));
